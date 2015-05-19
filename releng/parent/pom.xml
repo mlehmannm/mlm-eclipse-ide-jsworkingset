@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>mlm.eclipse.ide.jsworkingset</groupId>
+	<artifactId>jsworkingset-parent</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<prerequisites>
+		<maven>3.0</maven>
+	</prerequisites>
+
+	<properties>
+		<tycho-version>0.22.0</tycho-version>
+	</properties>
+
+	<scm>
+		<connection>scm:git:https://github.com/mlehmannm/mlm-eclipse-ide-jsworkingset.git</connection>
+		<developerConnection>scm:git:git@github.com:mlehmannm/mlm-eclipse-ide-jsworkingset.git</developerConnection>
+		<url>https://github.com/mlehmannm/mlm-eclipse-ide-jsworkingset</url>
+		<tag>HEAD</tag>
+	</scm>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>1.8</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>2.6.1</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.7</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<extensions>true</extensions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+					<resolver>p2</resolver>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-source-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<executions>
+					<execution>
+						<id>plugin-source</id>
+						<goals>
+							<goal>plugin-source</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-packaging-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.eclipse.tycho.extras</groupId>
+						<artifactId>tycho-buildtimestamp-jgit</artifactId>
+						<version>${tycho-version}</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<timestampProvider>jgit</timestampProvider>
+					<jgit.dirtyWorkingTree>warning</jgit.dirtyWorkingTree>
+					<jgit.ignore>
+						pom.xml
+						.gitignore
+					</jgit.ignore>
+					<format>'v'yyyyMMdd-HHmm</format>
+					<archive>
+						<addMavenDescriptor>false</addMavenDescriptor>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>eclipse-luna</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>eclipse-target</name>
+					<value>luna</value>
+				</property>
+			</activation>
+			<properties>
+				<platform-version>[4.4.0,4.5.0)</platform-version>
+			</properties>
+			<repositories>
+				<!-- Eclipse Luna SR2 -->
+				<repository>
+					<id>eclipse-luna</id>
+					<layout>p2</layout>
+					<url>http://download.eclipse.org/releases/luna/201502271000</url>
+				</repository>
+			</repositories>
+		</profile>
+		<profile>
+			<id>eclipse-mars</id>
+			<activation>
+				<property>
+					<name>eclipse-target</name>
+					<value>mars</value>
+				</property>
+			</activation>
+			<properties>
+				<platform-version>[4.5.0,4.6.0)</platform-version>
+			</properties>
+			<repositories>
+				<!-- Eclipse Mars -->
+				<repository>
+					<id>eclipse-mars</id>
+					<layout>p2</layout>
+					<url>http://download.eclipse.org/releases/mars</url>
+				</repository>
+			</repositories>
+		</profile>
+	</profiles>
+
+</project>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="mlm.eclipse.ide.jsworkingset.feature"
+      label="%feature.name"
+      version="1.0.0.qualifier"
+      provider-name="%feature.provider"
+      plugin="mlm.eclipse.ide.jsworkingset">
+
+   <description>
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <plugin
+         id="mlm.eclipse.ide.jsworkingset"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

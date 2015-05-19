@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="marker"
+         name="%marker.name"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.marker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
+   <extension
+         id="problemmarker"
+         name="%problemmarker.name"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="mlm.eclipse.ide.jsworkingset.internal.Startup">
+      </startup>
+   </extension>
+   <extension
+         point="org.eclipse.ui.workingSets">
+      <workingSet
+            icon="platform:/plugin/org.eclipse.ui.ide/icons/full/obj16/workset.png"
+            id="mlm.eclipse.ide.jsworkingset.JSWorkingSet"
+            name="%JSWorkingSet.name"
+            pageClass="mlm.eclipse.ide.jsworkingset.internal.JSWorkingSetPage"
+            updaterClass="mlm.eclipse.ide.jsworkingset.internal.JSWorkingSetUpdater">
+      </workingSet>
+   </extension>
+
+</plugin>
