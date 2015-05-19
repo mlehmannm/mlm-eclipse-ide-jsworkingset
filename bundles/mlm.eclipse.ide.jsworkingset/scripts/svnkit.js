@@ -4,7 +4,6 @@ var Arrays = java.util.Arrays;
 var Collectors = java.util.stream.Collectors;
 var IAdaptableArr = Java.type("org.eclipse.core.runtime.IAdaptable[]");
 var ResourcesPlugin = org.eclipse.core.resources.ResourcesPlugin;
-var SVNWorkspaceRoot = org.tigris.subversion.subclipse.core.resources.SVNWorkspaceRoot;
 var System = java.lang.System;
 var repoRoot = "http://svn.svnkit.com/repos/svnkit";
 
@@ -16,7 +15,7 @@ var projects = workspace.getRoot().getProjects();
 var filteredProjects = Arrays.stream(projects)
 	.filter(function(p) p.isOpen()) // open projects
 	.filter(function(p) subclipse.isManagedBySubclipse(p)) // by subclipse-managed
-	.filter(function(p) subclipse.repositoryRoot(p).startsWith(repoRoot)) // by same repository root url
+	.filter(function(p) subclipse.repositoryRoot(p).startsWith(repoRoot)) // by starts-with same repository root url
 	.toArray(function(size) new IAdaptableArr(size)) // to sized array
 	;
 
