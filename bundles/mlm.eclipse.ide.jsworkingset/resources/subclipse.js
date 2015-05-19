@@ -19,6 +19,15 @@ subclipse.repositoryRoot = function(pProject) {
 
 }
 
+subclipse.url = function(pProject) {
+
+	var SVNWorkspaceRoot = org.tigris.subversion.subclipse.core.resources.SVNWorkspaceRoot;
+	var url = SVNWorkspaceRoot.getSVNResourceFor(pProject).getUrl();
+	// java.lang.System.err.println(pProject.getName() + " => url: " + url.toString());
+	return url.toString();
+
+}
+
 var module = {
 	name : 'subclipse',
 	exports : {
