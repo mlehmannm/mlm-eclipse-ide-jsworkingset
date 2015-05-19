@@ -43,12 +43,14 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.IWorkingSet;
@@ -178,10 +180,11 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 			try (Reader reader = new InputStreamReader(scriptUrl.openStream(), StandardCharsets.UTF_8)) {
 
-				final ScriptEngine scriptEngine = newScriptEngine();
-				scriptEngine.eval(reader);
+				final ScriptEngine engine = newScriptEngine();
+				engine.put(ScriptEngine.FILENAME, FileLocator.resolve(scriptUrl).toString());
+				engine.eval(reader);
 
-				final Bindings bindings = scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE);
+				final Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
 				final Bindings module = (Bindings) bindings.get("module");
 				final Bindings moduleExports = (Bindings) module.get("exports");
 				for (final Entry<String, Object> entry : moduleExports.entrySet()) {
@@ -397,7 +400,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 				// TODO change name/icon? log?
 				pWorkingSetData.workingSet.setElements(new IAdaptable[0]);
 
-				// TODO set markers
+				createMarkers(pWorkingSetData.scriptFile, ex);
 
 			}
 
@@ -435,6 +438,13 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 		}
 
+		if (!pResource.getFullPath().toString().equals(pException.getFileName())) {
+
+			return;
+
+		}
+
+		final IResourceRuleFactory ruleFactory = pResource.getWorkspace().getRuleFactory();
 		final WorkspaceJob markerJob = new WorkspaceJob("create-markers") {
 
 
@@ -452,8 +462,8 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 
 		};
-
-		final IResourceRuleFactory ruleFactory = pResource.getWorkspace().getRuleFactory();
+		markerJob.setSystem(true);
+		markerJob.setPriority(Job.SHORT);
 		markerJob.setRule(ruleFactory.markerRule(pResource));
 		markerJob.schedule();
 
@@ -468,6 +478,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 		}
 
+		final IResourceRuleFactory ruleFactory = pResource.getWorkspace().getRuleFactory();
 		final WorkspaceJob markerJob = new WorkspaceJob("create-markers") {
 
 
@@ -484,8 +495,8 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 
 		};
-
-		final IResourceRuleFactory ruleFactory = pResource.getWorkspace().getRuleFactory();
+		markerJob.setSystem(true);
+		markerJob.setPriority(Job.SHORT);
 		markerJob.setRule(ruleFactory.markerRule(pResource));
 		markerJob.schedule();
 
@@ -500,6 +511,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 		}
 
+		final IResourceRuleFactory ruleFactory = pResource.getWorkspace().getRuleFactory();
 		final WorkspaceJob markerJob = new WorkspaceJob("delete-markers") {
 
 
@@ -514,8 +526,8 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 
 		};
-
-		final IResourceRuleFactory ruleFactory = pResource.getWorkspace().getRuleFactory();
+		markerJob.setSystem(true);
+		markerJob.setPriority(Job.SHORT);
 		markerJob.setRule(ruleFactory.markerRule(pResource));
 		markerJob.schedule();
 
