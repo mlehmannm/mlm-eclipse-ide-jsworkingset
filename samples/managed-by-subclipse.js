@@ -1,4 +1,4 @@
-// subclipse.js
+// managed-by-subclipse.js
 // 
 // Global Variables
 //
@@ -28,4 +28,4 @@ var adaptedProjects = workingSet.adaptElements(filteredProjects)
 
 // update
 workingSet.setElements(adaptedProjects);
-workingSet.setLabel("Subclipse (" + adaptedProjects.length + " of " + projects.length + ")");
+workingSet.setLabel("Managed By Subclipse (" + adaptedProjects.length + " of " + projects.length + ")");

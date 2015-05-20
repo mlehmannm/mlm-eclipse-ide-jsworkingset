@@ -12,3 +12,8 @@ Possible use cases
 * Working sets based on regular expressions
 * Working sets based on project status (open, closed, with errors)
 * Many more
+
+Samples
+--------
+
+For samples please see [here](https://github.com/mlehmannm/mlm-eclipse-ide-jsworkingset/tree/master/samples)
