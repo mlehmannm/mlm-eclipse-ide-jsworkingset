@@ -302,15 +302,19 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 		// check for updates to scripts
 		for (final WorkingSetData workingSetData : mWorkingSets.values()) {
 
-			final IPath scriptPath = workingSetData.scriptFile.getFullPath();
-			final IResourceDelta scriptDelta = delta.findMember(scriptPath);
-			if (scriptDelta != null) {
+			if (workingSetData.scriptFile != null) {
 
-				final int scriptFlags = scriptDelta.getFlags();
-				if ((scriptFlags & ~IResourceDelta.MARKERS) != IResourceDelta.NO_CHANGE) {
+				final IPath scriptPath = workingSetData.scriptFile.getFullPath();
+				final IResourceDelta scriptDelta = delta.findMember(scriptPath);
+				if (scriptDelta != null) {
 
-					resetWorkingSetData(workingSetData);
-					updateWorkingSetData(workingSetData);
+					final int scriptFlags = scriptDelta.getFlags();
+					if ((scriptFlags & ~IResourceDelta.MARKERS) != IResourceDelta.NO_CHANGE) {
+
+						resetWorkingSetData(workingSetData);
+						updateWorkingSetData(workingSetData);
+
+					}
 
 				}
 
@@ -322,6 +326,24 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 
 	private void updateWorkingSetData( final WorkingSetData pWorkingSetData ) {
+
+		final long startTime = System.currentTimeMillis();
+
+		updateWorkingSetData0(pWorkingSetData);
+
+		final long endTime = System.currentTimeMillis();
+
+		final long elapsed = endTime - startTime;
+		final String message = String.format("Working set '%s' updated in %d ms.", pWorkingSetData.workingSet.getLabel(), elapsed);
+		final IStatus status = new Status(IStatus.INFO, Activator.ID_PLUGIN, message);
+		Activator.getDefault().getLog().log(status);
+
+	}
+
+
+	private void updateWorkingSetData0( final WorkingSetData pWorkingSetData ) {
+
+		final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 
 		if (pWorkingSetData.scriptFile == null && pWorkingSetData.compiledScript == null) {
 
@@ -336,8 +358,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 			}
 
 			final Path scriptPath = new Path(scriptPathStr);
-			final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-			final IFile scriptFile = root.getFile(scriptPath);
+			final IFile scriptFile = workspaceRoot.getFile(scriptPath);
 			if (!scriptFile.isAccessible()) {
 
 				// TODO change name/icon? log?
@@ -389,6 +410,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 				bindings.put(ScriptEngine.FILENAME, pWorkingSetData.scriptFile.toString());
 				bindings.put("workingSet", pWorkingSetData.workingSet); //$NON-NLS-1$
+				bindings.computeIfAbsent("projects", ( s ) -> workspaceRoot.getProjects()); //$NON-NLS-1$
 
 				pWorkingSetData.compiledScript.eval(bindings);
 
@@ -401,6 +423,10 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 				pWorkingSetData.workingSet.setElements(new IAdaptable[0]);
 
 				createMarkers(pWorkingSetData.scriptFile, ex);
+
+			} finally {
+
+				bindings.clear();
 
 			}
 
