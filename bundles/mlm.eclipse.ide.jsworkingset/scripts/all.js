@@ -1,14 +1,18 @@
 // all.js
+// 
+// Global Variables
+//
+//	working set
+//		the current working set to be modified
+//	projects
+//		array of all (visible) projects in the workspace
+//	log
+//		the plug-in log
+//
 
-var ResourcesPlugin = org.eclipse.core.resources.ResourcesPlugin;
-
-// projects
-var workspace = ResourcesPlugin.getWorkspace();
-var projects = workspace.getRoot().getProjects();
-
-// adapted projects
+// adapt
 var adaptedProjects = workingSet.adaptElements(projects)
-workingSet.setElements(adaptedProjects);
 
-// TODO add (x of y) as decoration?
+// update
+workingSet.setElements(adaptedProjects);
 workingSet.setLabel("All (" + adaptedProjects.length + " of " + projects.length + ")");

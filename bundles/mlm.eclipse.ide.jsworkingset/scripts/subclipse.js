@@ -1,27 +1,31 @@
 // subclipse.js
+// 
+// Global Variables
+//
+//	working set
+//		the current working set to be modified
+//	projects
+//		array of all (visible) projects in the workspace
+//	log
+//		the plug-in log
+//
 
+// imports
 var Arrays = java.util.Arrays;
-var Collectors = java.util.stream.Collectors;
 var IAdaptableArr = Java.type("org.eclipse.core.runtime.IAdaptable[]");
-var ResourcesPlugin = org.eclipse.core.resources.ResourcesPlugin;
-var System = java.lang.System;
-var svnUrl = "http://subclipse.tigris.org/svn/subclipse";
+var url = "http://subclipse.tigris.org/svn/subclipse";
 
-// projects
-var workspace = ResourcesPlugin.getWorkspace();
-var projects = workspace.getRoot().getProjects();
-
-// filtered projects
+// filter
 var filteredProjects = Arrays.stream(projects)
 	.filter(function(p) p.isOpen()) // open projects
 	.filter(function(p) subclipse.isManagedBySubclipse(p)) // by subclipse-managed
-	.filter(function(p) subclipse.url(p).startsWith(svnUrl)) // by starts-with same url
+	.filter(function(p) subclipse.url(p).startsWith(url)) // by same repository root url
 	.toArray(function(size) new IAdaptableArr(size)) // to sized array
 	;
 
-// adapted projects
+// adapt
 var adaptedProjects = workingSet.adaptElements(filteredProjects)
-workingSet.setElements(adaptedProjects);
 
-// TODO add (x of y) as decoration?
+// update
+workingSet.setElements(adaptedProjects);
 workingSet.setLabel("Subclipse (" + adaptedProjects.length + " of " + projects.length + ")");
