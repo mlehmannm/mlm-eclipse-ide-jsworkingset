@@ -19,6 +19,7 @@
 		<!-- bundle(s) -->
 		<module>bundles/mlm.eclipse.ide.jsworkingset</module>
 		<!-- test(s) -->
+		<module>tests/mlm.eclipse.ide.jsworkingset.tests</module>
 		<!-- repository -->
 		<module>releng/repository</module>
 	</modules>

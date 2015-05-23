@@ -16,6 +16,10 @@
 	</prerequisites>
 
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 		<tycho-version>0.22.0</tycho-version>
 	</properties>
 
@@ -118,6 +122,12 @@
 					<layout>p2</layout>
 					<url>http://download.eclipse.org/releases/luna/201502271000</url>
 				</repository>
+				<!-- Eclipse Luna Orbit SR2 -->
+				<repository>
+					<id>eclipse-luna-orbit</id>
+					<layout>p2</layout>
+					<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository</url>
+				</repository>
 			</repositories>
 		</profile>
 		<profile>
@@ -137,6 +147,12 @@
 					<id>eclipse-mars</id>
 					<layout>p2</layout>
 					<url>http://download.eclipse.org/releases/mars</url>
+				</repository>
+				<!-- Eclipse Mars Orbit -->
+				<repository>
+					<id>eclipse-mars-orbit</id>
+					<layout>p2</layout>
+					<url>http://download.eclipse.org/tools/orbit/downloads/drops/S20150519210750/repository</url>
 				</repository>
 			</repositories>
 		</profile>
