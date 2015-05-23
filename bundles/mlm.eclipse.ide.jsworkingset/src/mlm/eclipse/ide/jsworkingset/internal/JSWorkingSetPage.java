@@ -64,11 +64,20 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 
 	/**
 	 *
-	 * The name for the working set.
+	 * The label for the working set.
 	 *
 	 */
 
 	private Text mWorkingSetLabel;
+
+
+	/**
+	 *
+	 * The name for the working set.
+	 *
+	 */
+
+	private Text mWorkingSetName;
 
 
 	/**
@@ -93,7 +102,7 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 		super(JSWorkingSetPage.class.getSimpleName());
 
 		setTitle("JavaScript-based Working Set");
-		setMessage("Enter a working set name and select the script that makes up the content of the working set.");
+		setMessage("Enter a working set label and name and select the script that makes up the content of the working set.");
 
 	}
 
@@ -108,7 +117,7 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 		setControl(composite);
 
 		Label label = new Label(composite, SWT.WRAP);
-		label.setText("Working set label:");
+		label.setText("Label:");
 
 		final String workingSetLabel = mWorkingSet != null ? mWorkingSet.getLabel() : ""; //$NON-NLS-1$
 		mWorkingSetLabel = new Text(composite, SWT.BORDER | SWT.SINGLE);
@@ -131,6 +140,31 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 
 		});
 		mWorkingSetLabel.setFocus();
+
+		label = new Label(composite, SWT.WRAP);
+		label.setText("Name:");
+
+		final String workingSetName = JSWorkingSetPrefs.getName(mWorkingSet);
+		mWorkingSetName = new Text(composite, SWT.BORDER | SWT.SINGLE);
+		mWorkingSetName.setText(workingSetName);
+		mWorkingSetName.setLayoutData(GridDataFactory.swtDefaults() //
+		        .align(SWT.FILL, SWT.CENTER) //
+		        .grab(true, false) //
+		        .span(2, 1) //
+		        .create());
+		mWorkingSetName.addModifyListener(new ModifyListener() {
+
+
+			@Override
+			public void modifyText( final ModifyEvent pEvent ) {
+
+				// validatePage();
+
+			}
+
+
+		});
+		mWorkingSetName.setFocus();
 
 		label = new Label(composite, SWT.WRAP);
 		label.setText("Script:");
@@ -200,6 +234,7 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 	public void finish() {
 
 		final String workingSetLabel = mWorkingSetLabel.getText().trim();
+		final String workingSetName = mWorkingSetName.getText().trim();
 		final String workingSetScript = mWorkingSetScript.getText().trim();
 
 		if (mWorkingSet == null) {
@@ -212,6 +247,7 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 
 		mWorkingSet.setLabel(workingSetLabel);
 
+		JSWorkingSetPrefs.setName(mWorkingSet, workingSetName.trim());
 		JSWorkingSetPrefs.setScript(mWorkingSet, workingSetScript.trim());
 
 	}

@@ -23,7 +23,7 @@ import org.eclipse.ui.IWorkingSet;
 
 /**
  *
- * TODO
+ * Helper class to read/write additional information for the working set in the preferences.
  *
  * @author Marco Lehmann-Mörz
  *
@@ -36,7 +36,7 @@ public final class JSWorkingSetPrefs {
 
 	/**
 	 *
-	 * TODO
+	 * Common key prefix to access the preferences.
 	 *
 	 */
 
@@ -45,16 +45,16 @@ public final class JSWorkingSetPrefs {
 
 	/**
 	 *
-	 * TODO
+	 * Key prefix to access the name in the preferences.
 	 *
 	 */
 
-	public static final String PREF_KEY__LABEL_PREFIX = PREF_KEY__PREFIX + "label."; //$NON-NLS-1$
+	public static final String PREF_KEY__NAME_PREFIX = PREF_KEY__PREFIX + "name."; //$NON-NLS-1$
 
 
 	/**
 	 *
-	 * TODO
+	 * Key prefix to access the script in the preferences.
 	 *
 	 */
 
@@ -76,30 +76,76 @@ public final class JSWorkingSetPrefs {
 	}
 
 
-	public static String getLabel( final IWorkingSet pWorkingSet ) {
+	/**
+	 *
+	 * Returns the original name of the working set.
+	 *
+	 * @param pWorkingSet the working set (may be <code>null</code>)
+	 *
+	 * @return the name or <code>null</code>
+	 *
+	 * @since mlm.eclipse.ide.jsworkingset 1.0
+	 *
+	 */
 
-		return getString(pWorkingSet, PREF_KEY__PREFIX); // TODO use another prefix
+	public static String getName( final IWorkingSet pWorkingSet ) {
+
+		return getString(pWorkingSet, PREF_KEY__NAME_PREFIX);
 
 	}
 
 
-	public static void setLabel( final IWorkingSet pWorkingSet, final String pLabel ) {
+	/**
+	 *
+	 * Sets the original name for the working set.
+	 *
+	 * @param pWorkingSet the working set (may be <code>null</code>)
+	 * @param pName the original name of the working set
+	 *
+	 * @since mlm.eclipse.ide.jsworkingset 1.0
+	 *
+	 */
 
-		setString(pWorkingSet, PREF_KEY__PREFIX, pLabel); // TODO use another prefix
+	public static void setName( final IWorkingSet pWorkingSet, final String pName ) {
+
+		setString(pWorkingSet, PREF_KEY__NAME_PREFIX, pName);
 
 	}
 
+
+	/**
+	 *
+	 * Returns the script of the working set.
+	 *
+	 * @param pWorkingSet the working set (may be <code>null</code>)
+	 *
+	 * @return the name or <code>null</code>
+	 *
+	 * @since mlm.eclipse.ide.jsworkingset 1.0
+	 *
+	 */
 
 	public static String getScript( final IWorkingSet pWorkingSet ) {
 
-		return getString(pWorkingSet, PREF_KEY__PREFIX); // TODO use another prefix
+		return getString(pWorkingSet, PREF_KEY__SCRIPT_PREFIX);
 
 	}
 
 
+	/**
+	 *
+	 * Sets the script for the working set.
+	 *
+	 * @param pWorkingSet the working set (may be <code>null</code>)
+	 * @param pScript the workspace-relative path to the script (may be <code>null</code>)
+	 *
+	 * @since mlm.eclipse.ide.jsworkingset 1.0
+	 *
+	 */
+
 	public static void setScript( final IWorkingSet pWorkingSet, final String pScript ) {
 
-		setString(pWorkingSet, PREF_KEY__PREFIX, pScript); // TODO use another prefix
+		setString(pWorkingSet, PREF_KEY__SCRIPT_PREFIX, pScript);
 
 	}
 

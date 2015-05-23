@@ -52,18 +52,18 @@ public class JSWorkingSetPrefsTest {
 	@Test
 	public void testGetSetLabel() {
 
-		Assert.assertNull(JSWorkingSetPrefs.getLabel(null));
+		Assert.assertNull(JSWorkingSetPrefs.getName(null));
 
 		final IWorkingSet ws = mock(IWorkingSet.class);
 		when(ws.getName()).thenReturn(String.valueOf("testGetSetLabel"));
 
-		Assert.assertNull(JSWorkingSetPrefs.getLabel(ws));
+		Assert.assertNull(JSWorkingSetPrefs.getName(ws));
 
-		JSWorkingSetPrefs.setLabel(ws, "label");
-		Assert.assertSame("label", JSWorkingSetPrefs.getLabel(ws));
+		JSWorkingSetPrefs.setName(ws, "label");
+		Assert.assertSame("label", JSWorkingSetPrefs.getName(ws));
 
-		JSWorkingSetPrefs.setLabel(ws, null);
-		Assert.assertNull(JSWorkingSetPrefs.getLabel(ws));
+		JSWorkingSetPrefs.setName(ws, null);
+		Assert.assertNull(JSWorkingSetPrefs.getName(ws));
 
 	}
 
