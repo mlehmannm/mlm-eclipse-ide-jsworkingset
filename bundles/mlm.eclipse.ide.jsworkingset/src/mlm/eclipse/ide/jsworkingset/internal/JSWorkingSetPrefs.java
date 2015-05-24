@@ -15,7 +15,6 @@ package mlm.eclipse.ide.jsworkingset.internal;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.IWorkingSet;
@@ -80,7 +79,8 @@ public final class JSWorkingSetPrefs {
 	 *
 	 * Returns the original name of the working set.
 	 *
-	 * @param pWorkingSet the working set (may be <code>null</code>)
+	 * @param pWorkingSet
+	 *            the working set (may be <code>null</code>)
 	 *
 	 * @return the name or <code>null</code>
 	 *
@@ -99,8 +99,10 @@ public final class JSWorkingSetPrefs {
 	 *
 	 * Sets the original name for the working set.
 	 *
-	 * @param pWorkingSet the working set (may be <code>null</code>)
-	 * @param pName the original name of the working set
+	 * @param pWorkingSet
+	 *            the working set (may be <code>null</code>)
+	 * @param pName
+	 *            the original name of the working set
 	 *
 	 * @since mlm.eclipse.ide.jsworkingset 1.0
 	 *
@@ -117,7 +119,8 @@ public final class JSWorkingSetPrefs {
 	 *
 	 * Returns the script of the working set.
 	 *
-	 * @param pWorkingSet the working set (may be <code>null</code>)
+	 * @param pWorkingSet
+	 *            the working set (may be <code>null</code>)
 	 *
 	 * @return the name or <code>null</code>
 	 *
@@ -136,8 +139,10 @@ public final class JSWorkingSetPrefs {
 	 *
 	 * Sets the script for the working set.
 	 *
-	 * @param pWorkingSet the working set (may be <code>null</code>)
-	 * @param pScript the workspace-relative path to the script (may be <code>null</code>)
+	 * @param pWorkingSet
+	 *            the working set (may be <code>null</code>)
+	 * @param pScript
+	 *            the workspace-relative path to the script (may be <code>null</code>)
 	 *
 	 * @since mlm.eclipse.ide.jsworkingset 1.0
 	 *
@@ -193,8 +198,7 @@ public final class JSWorkingSetPrefs {
 		} catch (final Exception ex) {
 
 			// log
-			final IStatus status = new Status(IStatus.ERROR, Activator.ID_PLUGIN, "Failed to save to preferences!", ex); //$NON-NLS-1$
-			Activator.getDefault().getLog().log(status);
+			Activator.log(IStatus.ERROR, "Failed to save to preferences!", ex); //$NON-NLS-1$
 
 		}
 

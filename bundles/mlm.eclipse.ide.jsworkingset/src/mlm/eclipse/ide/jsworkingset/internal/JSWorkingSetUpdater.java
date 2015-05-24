@@ -195,8 +195,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 			} catch (IOException | ScriptException ex) {
 
-				final IStatus status = new Status(IStatus.ERROR, Activator.ID_PLUGIN, "Failed to eval script!", ex); //$NON-NLS-1$
-				Activator.getDefault().getLog().log(status);
+				Activator.log(IStatus.ERROR, "Failed to eval script!", ex); //$NON-NLS-1$
 
 			}
 
@@ -334,9 +333,14 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 		final long endTime = System.currentTimeMillis();
 
 		final long elapsed = endTime - startTime;
-		final String message = String.format("Working set '%s' updated in %d ms.", pWorkingSetData.workingSet.getLabel(), elapsed);
-		final IStatus status = new Status(IStatus.INFO, Activator.ID_PLUGIN, message);
-		Activator.getDefault().getLog().log(status);
+
+		if (Activator.DEBUG) {
+
+			final String label = pWorkingSetData.workingSet.getLabel();
+			final String message = String.format("Working set '%s' updated in %d ms.", label, elapsed);
+			Activator.log(IStatus.INFO, message);
+
+		}
 
 	}
 
@@ -351,6 +355,8 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 			if (scriptPathStr == null) {
 
 				// TODO change name/icon? log?
+				final String name = JSWorkingSetPrefs.getName(pWorkingSetData.workingSet);
+				pWorkingSetData.workingSet.setLabel(name != null ? name : "working set");
 				pWorkingSetData.workingSet.setElements(new IAdaptable[0]);
 
 				return;
@@ -362,6 +368,8 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 			if (!scriptFile.isAccessible()) {
 
 				// TODO change name/icon? log?
+				final String name = JSWorkingSetPrefs.getName(pWorkingSetData.workingSet);
+				pWorkingSetData.workingSet.setLabel(name != null ? name : "working set");
 				pWorkingSetData.workingSet.setElements(new IAdaptable[0]);
 
 				return;
@@ -386,15 +394,13 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 			} catch (final CoreException | IOException ex) {
 
-				final IStatus status = new Status(IStatus.ERROR, Activator.ID_PLUGIN, "Failed to access/load script!", ex); //$NON-NLS-1$
-				Activator.getDefault().getLog().log(status);
+				Activator.log(IStatus.ERROR, "Failed to access/load script!", ex); //$NON-NLS-1$
 
 				createMarkers(pWorkingSetData.scriptFile, ex);
 
 			} catch (final ScriptException ex) {
 
-				final IStatus status = new Status(IStatus.ERROR, Activator.ID_PLUGIN, "Failed to compile script!", ex); //$NON-NLS-1$
-				Activator.getDefault().getLog().log(status);
+				Activator.log(IStatus.ERROR, "Failed to compile script!", ex); //$NON-NLS-1$
 
 				createMarkers(pWorkingSetData.scriptFile, ex);
 
@@ -416,10 +422,11 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 			} catch (final ScriptException ex) {
 
-				final IStatus status = new Status(IStatus.ERROR, Activator.ID_PLUGIN, "Failed to eval script!", ex); //$NON-NLS-1$
-				Activator.getDefault().getLog().log(status);
+				Activator.log(IStatus.ERROR, "Failed to eval script!", ex); //$NON-NLS-1$
 
 				// TODO change name/icon? log?
+				final String name = JSWorkingSetPrefs.getName(pWorkingSetData.workingSet);
+				pWorkingSetData.workingSet.setLabel(name != null ? name : "working set");
 				pWorkingSetData.workingSet.setElements(new IAdaptable[0]);
 
 				createMarkers(pWorkingSetData.scriptFile, ex);
@@ -433,6 +440,8 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 		} else {
 
 			// TODO change name/icon? log?
+			final String name = JSWorkingSetPrefs.getName(pWorkingSetData.workingSet);
+			pWorkingSetData.workingSet.setLabel(name != null ? name : "working set");
 			pWorkingSetData.workingSet.setElements(new IAdaptable[0]);
 
 		}

@@ -13,6 +13,12 @@
 package mlm.eclipse.ide.jsworkingset.internal;
 
 
+import java.util.Hashtable;
+
+import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.service.debug.DebugOptions;
+import org.eclipse.osgi.service.debug.DebugOptionsListener;
+import org.eclipse.osgi.service.debug.DebugTrace;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -27,7 +33,7 @@ import org.osgi.framework.BundleContext;
  *
  */
 
-public final class Activator extends AbstractUIPlugin {
+public final class Activator extends AbstractUIPlugin implements DebugOptionsListener {
 
 
 	/**
@@ -68,6 +74,24 @@ public final class Activator extends AbstractUIPlugin {
 
 	/**
 	 *
+	 * Holds the trace.
+	 *
+	 */
+
+	public static DebugTrace sTrace;
+
+
+	/**
+	 *
+	 * Global debug flag.
+	 *
+	 */
+
+	public static boolean DEBUG = false;
+
+
+	/**
+	 *
 	 * Constructs a new <code>Activator</code>.
 	 *
 	 * @since mlm.eclipse.ide.jsworkingset 1.0
@@ -87,6 +111,24 @@ public final class Activator extends AbstractUIPlugin {
 		super.start(pContext);
 
 		sSingleton = this;
+
+		final Hashtable<String, Object> props = new Hashtable<>(4);
+		props.put(DebugOptions.LISTENER_SYMBOLICNAME, ID_PLUGIN);
+		pContext.registerService(DebugOptionsListener.class, this, props);
+
+	}
+
+
+	@Override
+	public void optionsChanged( final DebugOptions pOptions ) {
+
+		if (sTrace == null) {
+
+			sTrace = pOptions.newDebugTrace(ID_PLUGIN);
+
+		}
+
+		DEBUG = pOptions.getBooleanOption(ID_PLUGIN + "/debug", false); //$NON-NLS-1$
 
 	}
 
@@ -111,9 +153,51 @@ public final class Activator extends AbstractUIPlugin {
 	 *
 	 */
 
-	public static Activator getDefault() {
+	public static final Activator getDefault() {
 
 		return sSingleton;
+
+	}
+
+
+	/**
+	 *
+	 * Convenience method to log.
+	 *
+	 * @param pSeverity
+	 *            the severity
+	 * @param pMessage
+	 *            the message
+	 *
+	 * @since mlm.eclipse.ide.jsworkingset 1.0
+	 *
+	 */
+
+	public static final void log( final int pSeverity, final String pMessage ) {
+
+		getDefault().getLog().log(new Status(pSeverity, ID_PLUGIN, pMessage));
+
+	}
+
+
+	/**
+	 *
+	 * Convenience method to log.
+	 *
+	 * @param pSeverity
+	 *            the severity
+	 * @param pMessage
+	 *            the message
+	 * @param pThrow
+	 *            the throwable
+	 *
+	 * @since mlm.eclipse.ide.jsworkingset 1.0
+	 *
+	 */
+
+	public static final void log( final int pSeverity, final String pMessage, final Throwable pThrow ) {
+
+		getDefault().getLog().log(new Status(pSeverity, ID_PLUGIN, pMessage, pThrow));
 
 	}
 
