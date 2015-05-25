@@ -146,7 +146,7 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 
 		final String workingSetName = JSWorkingSetPrefs.getName(mWorkingSet);
 		mWorkingSetName = new Text(composite, SWT.BORDER | SWT.SINGLE);
-		mWorkingSetName.setText(workingSetName);
+		mWorkingSetName.setText(workingSetName != null ? workingSetName : "");
 		mWorkingSetName.setLayoutData(GridDataFactory.swtDefaults() //
 		        .align(SWT.FILL, SWT.CENTER) //
 		        .grab(true, false) //
