@@ -1,1 +1,4 @@
-mlm.eclipse.ide.jsworkingset/debug=true
+#### Debugging options for mlm.eclipse.ide.jsworkingset
+
+# Turn on general debugging for mlm.eclipse.ide.jsworkingset
+mlm.eclipse.ide.jsworkingset/debug=false

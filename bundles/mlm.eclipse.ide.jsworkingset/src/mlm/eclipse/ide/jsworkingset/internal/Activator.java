@@ -15,6 +15,9 @@ package mlm.eclipse.ide.jsworkingset.internal;
 
 import java.util.Hashtable;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.service.debug.DebugOptions;
 import org.eclipse.osgi.service.debug.DebugOptionsListener;
@@ -156,6 +159,42 @@ public final class Activator extends AbstractUIPlugin implements DebugOptionsLis
 	public static final Activator getDefault() {
 
 		return sSingleton;
+
+	}
+
+
+	/**
+	 *
+	 * Factory method to create a new script engine.
+	 * <p>
+	 * This is necessary, because the class loader must be changed to access all classes.
+	 * </p>
+	 *
+	 * @param pManager
+	 *            the script engine manager
+	 *
+	 * @return the new script engine
+	 *
+	 * @since mlm.eclipse.ide.jsworkingset 1.0
+	 *
+	 */
+
+	public static ScriptEngine newScriptEngine( final ScriptEngineManager pManager ) {
+
+		final Thread currentThread = Thread.currentThread();
+		final ClassLoader contextClassLoader = currentThread.getContextClassLoader();
+
+		try {
+
+			currentThread.setContextClassLoader(Activator.class.getClassLoader());
+
+			return pManager.getEngineByName("nashorn"); //$NON-NLS-1$
+
+		} finally {
+
+			currentThread.setContextClassLoader(contextClassLoader);
+
+		}
 
 	}
 

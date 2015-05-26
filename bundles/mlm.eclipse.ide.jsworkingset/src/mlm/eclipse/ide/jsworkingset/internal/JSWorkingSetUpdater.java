@@ -180,7 +180,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 			try (Reader reader = new InputStreamReader(scriptUrl.openStream(), StandardCharsets.UTF_8)) {
 
-				final ScriptEngine engine = newScriptEngine();
+				final ScriptEngine engine = Activator.newScriptEngine(mScriptEngineManager);
 				engine.put(ScriptEngine.FILENAME, FileLocator.resolve(scriptUrl).toString());
 				engine.eval(reader);
 
@@ -354,7 +354,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 			final String scriptPathStr = JSWorkingSetPrefs.getScript(pWorkingSetData.workingSet);
 			if (scriptPathStr == null) {
 
-				// TODO change name/icon? log?
+				// TODO change name/icon?
 				final String name = JSWorkingSetPrefs.getName(pWorkingSetData.workingSet);
 				pWorkingSetData.workingSet.setLabel(name != null ? name : "working set");
 				pWorkingSetData.workingSet.setElements(new IAdaptable[0]);
@@ -367,7 +367,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 			final IFile scriptFile = workspaceRoot.getFile(scriptPath);
 			if (!scriptFile.isAccessible()) {
 
-				// TODO change name/icon? log?
+				// TODO change name/icon?
 				final String name = JSWorkingSetPrefs.getName(pWorkingSetData.workingSet);
 				pWorkingSetData.workingSet.setLabel(name != null ? name : "working set");
 				pWorkingSetData.workingSet.setElements(new IAdaptable[0]);
@@ -382,7 +382,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 			try {
 
-				final ScriptEngine engine = newScriptEngine();
+				final ScriptEngine engine = Activator.newScriptEngine(mScriptEngineManager);
 				engine.put(ScriptEngine.FILENAME, scriptPathStr);
 
 				try (Reader reader = new InputStreamReader(scriptFile.getContents(), scriptFile.getCharset())) {
@@ -424,7 +424,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 				Activator.log(IStatus.ERROR, "Failed to eval script!", ex); //$NON-NLS-1$
 
-				// TODO change name/icon? log?
+				// TODO change name/icon?
 				final String name = JSWorkingSetPrefs.getName(pWorkingSetData.workingSet);
 				pWorkingSetData.workingSet.setLabel(name != null ? name : "working set");
 				pWorkingSetData.workingSet.setElements(new IAdaptable[0]);
@@ -439,7 +439,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 		} else {
 
-			// TODO change name/icon? log?
+			// TODO change name/icon?
 			final String name = JSWorkingSetPrefs.getName(pWorkingSetData.workingSet);
 			pWorkingSetData.workingSet.setLabel(name != null ? name : "working set");
 			pWorkingSetData.workingSet.setElements(new IAdaptable[0]);
@@ -565,26 +565,6 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 		markerJob.setPriority(Job.SHORT);
 		markerJob.setRule(ruleFactory.markerRule(pResource));
 		markerJob.schedule();
-
-	}
-
-
-	private ScriptEngine newScriptEngine() {
-
-		final Thread currentThread = Thread.currentThread();
-		final ClassLoader contextClassLoader = currentThread.getContextClassLoader();
-
-		try {
-
-			currentThread.setContextClassLoader(JSWorkingSetUpdater.class.getClassLoader());
-
-			return mScriptEngineManager.getEngineByName("nashorn"); //$NON-NLS-1$
-
-		} finally {
-
-			currentThread.setContextClassLoader(contextClassLoader);
-
-		}
 
 	}
 

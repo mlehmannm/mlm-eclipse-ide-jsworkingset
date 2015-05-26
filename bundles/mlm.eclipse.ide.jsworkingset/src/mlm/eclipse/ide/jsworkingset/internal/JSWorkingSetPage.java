@@ -53,6 +53,11 @@ import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
 public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 
 
+	// TODO use data-binding
+	// TODO validate input
+	// TODO make script editable
+
+
 	/**
 	 *
 	 * The working set.
