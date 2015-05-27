@@ -50,6 +50,15 @@ public final class Activator extends AbstractUIPlugin implements DebugOptionsLis
 
 	/**
 	 *
+	 * The id of the working set.
+	 *
+	 */
+
+	public static final String ID_WORKING_SET = ID_PLUGIN + ".JSWorkingSet"; //$NON-NLS-1$
+
+
+	/**
+	 *
 	 * The id of the marker.
 	 *
 	 */

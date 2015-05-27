@@ -62,6 +62,7 @@ public class ImportWorkingSetsHandler extends AbstractHandler {
 		}
 
 		final IAdapterManager adapterManager = Platform.getAdapterManager();
+		final IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
 
 		final ScriptEngineManager manager = new ScriptEngineManager();
 		final ScriptEngine engine = Activator.newScriptEngine(manager);
@@ -97,14 +98,13 @@ public class ImportWorkingSetsHandler extends AbstractHandler {
 						}
 
 						final String name = String.valueOf(System.currentTimeMillis());
-						final IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
 						final IWorkingSet workingSet = workingSetManager.createWorkingSet(name, new IAdaptable[0]);
-						workingSet.setId("mlm.eclipse.ide.jsworkingset.JSWorkingSet");
+						workingSet.setId(Activator.ID_WORKING_SET);
 						JSWorkingSetPrefs.setName(workingSet, label);
 						JSWorkingSetPrefs.setScript(workingSet, scriptPath.toString());
 						workingSetManager.addWorkingSet(workingSet);
 
-                    }
+					}
 
 				} catch (CoreException | IOException | ScriptException ex) {
 
