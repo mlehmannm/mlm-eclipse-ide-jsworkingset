@@ -20,6 +20,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<tycho.scmUrl>scm:git:https://github.com/mlehmannm/mlm-eclipse-ide-jsworkingset.git</tycho.scmUrl>
 		<tycho-version>0.22.0</tycho-version>
 	</properties>
 
@@ -79,25 +80,33 @@
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-packaging-plugin</artifactId>
 				<version>${tycho-version}</version>
+				<configuration>
+					<archive>
+						<addMavenDescriptor>false</addMavenDescriptor>
+					</archive>
+					<format>'v'yyyyMMdd-HHmm</format>
+					<jgit.dirtyWorkingTree>warning</jgit.dirtyWorkingTree>
+					<jgit.ignore>
+						pom.xml
+						.gitignore
+					</jgit.ignore>
+					<sourceReferences>
+						<generate>true</generate>
+					</sourceReferences>
+					<timestampProvider>jgit</timestampProvider>
+				</configuration>
 				<dependencies>
 					<dependency>
 						<groupId>org.eclipse.tycho.extras</groupId>
 						<artifactId>tycho-buildtimestamp-jgit</artifactId>
 						<version>${tycho-version}</version>
 					</dependency>
+					<dependency>
+						<groupId>org.eclipse.tycho.extras</groupId>
+						<artifactId>tycho-sourceref-jgit</artifactId>
+						<version>${tycho-version}</version>
+					</dependency>
 				</dependencies>
-				<configuration>
-					<timestampProvider>jgit</timestampProvider>
-					<jgit.dirtyWorkingTree>warning</jgit.dirtyWorkingTree>
-					<jgit.ignore>
-						pom.xml
-						.gitignore
-					</jgit.ignore>
-					<format>'v'yyyyMMdd-HHmm</format>
-					<archive>
-						<addMavenDescriptor>false</addMavenDescriptor>
-					</archive>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
@@ -157,5 +166,20 @@
 			</repositories>
 		</profile>
 	</profiles>
+
+	<licenses>
+		<license>
+			<name>Eclipse Public License v1.0</name>
+			<url>http://www.eclipse.org/legal/epl-v10.htm</url>
+			<comments>
+		       All rights reserved.
+		
+		       This program and the accompanying materials are made
+		       available under the terms of the Eclipse Public License v1.0
+		       which accompanies this distribution, and is available at
+		       http://www.eclipse.org/legal/epl-v10.htm
+	        </comments>
+		</license>
+	</licenses>
 
 </project>
