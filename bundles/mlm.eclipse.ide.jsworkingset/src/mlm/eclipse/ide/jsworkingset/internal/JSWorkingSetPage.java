@@ -13,21 +13,33 @@
 package mlm.eclipse.ide.jsworkingset.internal;
 
 
+import org.eclipse.core.databinding.Binding;
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.ValidationStatusProvider;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.observable.value.WritableValue;
+import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.databinding.dialog.ValidationMessageProvider;
+import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
+import org.eclipse.jface.databinding.swt.ISWTObservableValue;
+import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.wizard.WizardPageSupport;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -53,9 +65,10 @@ import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
 public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 
 
-	// TODO use data-binding
-	// TODO validate input
-	// TODO make script editable
+	// TODO make script editable / history?
+
+
+	private DataBindingContext mDataBindingContext;
 
 
 	/**
@@ -73,7 +86,7 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 	 *
 	 */
 
-	private Text mWorkingSetLabel;
+	private IObservableValue mWorkingSetLabel;
 
 
 	/**
@@ -82,7 +95,7 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 	 *
 	 */
 
-	private Text mWorkingSetName;
+	private IObservableValue mWorkingSetName;
 
 
 	/**
@@ -91,7 +104,7 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 	 *
 	 */
 
-	private Text mWorkingSetScript;
+	private IObservableValue mWorkingSetScript;
 
 
 	/**
@@ -107,7 +120,6 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 		super(JSWorkingSetPage.class.getSimpleName());
 
 		setTitle("JavaScript-based Working Set");
-		setMessage("Enter a working set label and name and select the script that makes up the content of the working set.");
 
 	}
 
@@ -115,106 +127,229 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 	@Override
 	public void createControl( final Composite pParent ) {
 
+		mDataBindingContext = new DataBindingContext(SWTObservables.getRealm(pParent.getDisplay()));
+
 		final Composite composite = new Composite(pParent, SWT.NONE);
 		composite.setLayout(GridLayoutFactory.fillDefaults() //
 		        .numColumns(3) //
 		        .create());
 		setControl(composite);
 
-		Label label = new Label(composite, SWT.WRAP);
-		label.setText("Label:");
+		// working set label
+		{
+			mWorkingSetLabel = WritableValue.withValueType(String.class);
 
-		final String workingSetLabel = mWorkingSet != null ? mWorkingSet.getLabel() : ""; //$NON-NLS-1$
-		mWorkingSetLabel = new Text(composite, SWT.BORDER | SWT.SINGLE);
-		mWorkingSetLabel.setText(workingSetLabel);
-		mWorkingSetLabel.setLayoutData(GridDataFactory.swtDefaults() //
-		        .align(SWT.FILL, SWT.CENTER) //
-		        .grab(true, false) //
-		        .span(2, 1) //
-		        .create());
-		mWorkingSetLabel.addModifyListener(new ModifyListener() {
+			final Label label = new Label(composite, SWT.WRAP);
+			label.setText("Label:");
 
+			final String workingSetLabel = mWorkingSet != null ? mWorkingSet.getLabel() : ""; //$NON-NLS-1$
+			final Text text = new Text(composite, SWT.BORDER | SWT.SINGLE);
+			text.setText(workingSetLabel);
+			text.setLayoutData(GridDataFactory.swtDefaults() //
+			        .align(SWT.FILL, SWT.CENTER) //
+			        .grab(true, false) //
+			        .span(2, 1) //
+			        .create());
 
-			@Override
-			public void modifyText( final ModifyEvent pEvent ) {
-
-				// validatePage();
-
-			}
+			final IValidator validator = new IValidator() {
 
 
-		});
-		mWorkingSetLabel.setFocus();
+				@Override
+				public IStatus validate( final Object pValue ) {
 
-		label = new Label(composite, SWT.WRAP);
-		label.setText("Name:");
+					final String value = (String) pValue;
 
-		final String workingSetName = JSWorkingSetPrefs.getName(mWorkingSet);
-		mWorkingSetName = new Text(composite, SWT.BORDER | SWT.SINGLE);
-		mWorkingSetName.setText(workingSetName != null ? workingSetName : "");
-		mWorkingSetName.setLayoutData(GridDataFactory.swtDefaults() //
-		        .align(SWT.FILL, SWT.CENTER) //
-		        .grab(true, false) //
-		        .span(2, 1) //
-		        .create());
-		mWorkingSetName.addModifyListener(new ModifyListener() {
+					if (value == null || value.trim().isEmpty()) {
 
+						return ValidationStatus.ok();
 
-			@Override
-			public void modifyText( final ModifyEvent pEvent ) {
+					}
 
-				// validatePage();
+					return ValidationStatus.info("This may likely be overridden by the script.");
 
-			}
+				}
 
 
-		});
-		mWorkingSetName.setFocus();
+			};
 
-		label = new Label(composite, SWT.WRAP);
-		label.setText("Script:");
+			final UpdateValueStrategy targetToModel = new UpdateValueStrategy() //
+			        .setAfterConvertValidator(validator) //
+			;
 
-		final String workingSetScript = JSWorkingSetPrefs.getScript(mWorkingSet);
-		mWorkingSetScript = new Text(composite, SWT.BORDER | SWT.READ_ONLY | SWT.SINGLE);
-		mWorkingSetScript.setText(workingSetScript != null ? workingSetScript : ""); //$NON-NLS-1$
-		mWorkingSetScript.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		mWorkingSetScript.setLayoutData(GridDataFactory.swtDefaults() //
-		        .align(SWT.FILL, SWT.CENTER) //
-		        .grab(true, false) //
-		        .create());
+			final ISWTObservableValue target = WidgetProperties.text(SWT.Modify) //
+			        .observe(text) //
+			;
 
-		final Button button = new Button(composite, SWT.PUSH);
-		button.setText("..."); //$NON-NLS-1$
-		button.addSelectionListener(new SelectionAdapter() {
+			final Binding binding = mDataBindingContext.bindValue(target, mWorkingSetLabel, targetToModel, null);
+
+			ControlDecorationSupport.create(binding, SWT.LEFT | SWT.TOP);
+		}
+
+		// working set name
+		{
+			mWorkingSetName = WritableValue.withValueType(String.class);
+
+			final Label label = new Label(composite, SWT.WRAP);
+			label.setText("Name:");
+
+			final String workingSetName = JSWorkingSetPrefs.getName(mWorkingSet);
+			final Text text = new Text(composite, SWT.BORDER | SWT.SINGLE);
+			text.setText(workingSetName != null ? workingSetName : ""); //$NON-NLS-1$
+			text.setLayoutData(GridDataFactory.swtDefaults() //
+			        .align(SWT.FILL, SWT.CENTER) //
+			        .grab(true, false) //
+			        .span(2, 1) //
+			        .create());
+			text.setFocus();
+
+			final IValidator validator = new IValidator() {
 
 
-			@Override
-			public void widgetSelected( final SelectionEvent pEvent ) {
+				@Override
+				public IStatus validate( final Object pValue ) {
 
-				final Shell shell = button.getShell();
-				final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-				final ResourceListSelectionDialog dialog = new ResourceListSelectionDialog(shell, root, IResource.FILE);
-				dialog.setTitle("Select a JavaScript file");
-				if (dialog.open() == Window.OK) {
+					final String value = (String) pValue;
 
-					final Object[] objects = dialog.getResult();
-					if (objects.length == 1) {
+					if (value == null || value.trim().isEmpty()) {
 
-						final IResource resource = (IResource) objects[0];
-						final IPath path = resource.getFullPath();
-						mWorkingSetScript.setText(path.toString());
+						return ValidationStatus.error("Please provide a name!");
 
-					} else {
+					}
 
-						mWorkingSetScript.setText(""); //$NON-NLS-1$
+					return ValidationStatus.ok();
+
+				}
+
+
+			};
+
+			final UpdateValueStrategy targetToModel = new UpdateValueStrategy() //
+			        .setAfterConvertValidator(validator) //
+			;
+
+			final ISWTObservableValue target = WidgetProperties.text(SWT.Modify) //
+			        .observe(text) //
+			;
+
+			final Binding binding = mDataBindingContext.bindValue(target, mWorkingSetName, targetToModel, null);
+
+			ControlDecorationSupport.create(binding, SWT.LEFT | SWT.TOP);
+		}
+
+		// script
+		{
+			mWorkingSetScript = WritableValue.withValueType(String.class);
+
+			final Label label = new Label(composite, SWT.WRAP);
+			label.setText("Script:");
+
+			final String workingSetScript = JSWorkingSetPrefs.getScript(mWorkingSet);
+			final Text text = new Text(composite, SWT.BORDER | SWT.SINGLE);
+			text.setText(workingSetScript != null ? workingSetScript : ""); //$NON-NLS-1$
+			text.setLayoutData(GridDataFactory.swtDefaults() //
+			        .align(SWT.FILL, SWT.CENTER) //
+			        .grab(true, false) //
+			        .create());
+
+			final Button button = new Button(composite, SWT.PUSH);
+			button.setText("..."); //$NON-NLS-1$
+			button.addSelectionListener(new SelectionAdapter() {
+
+
+				@Override
+				public void widgetSelected( final SelectionEvent pEvent ) {
+
+					final Shell shell = button.getShell();
+					final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+					final ResourceListSelectionDialog dialog = new ResourceListSelectionDialog(shell, root, IResource.FILE);
+					dialog.setTitle("Select a JavaScript file");
+					if (dialog.open() == Window.OK) {
+
+						final Object[] objects = dialog.getResult();
+						if (objects.length == 1) {
+
+							final IResource resource = (IResource) objects[0];
+							final IPath path = resource.getFullPath();
+							text.setText(path.toString());
+
+						} else {
+
+							text.setText(""); //$NON-NLS-1$
+
+						}
 
 					}
 
 				}
 
+
+			});
+
+			final IValidator validator = new IValidator() {
+
+
+				@Override
+				public IStatus validate( final Object pValue ) {
+
+					final String value = (String) pValue;
+
+					if (value == null || value.trim().isEmpty()) {
+
+						return ValidationStatus.error("Please provide a script!");
+
+					}
+
+					final IResource member = ResourcesPlugin.getWorkspace().getRoot().findMember(value);
+					if (member == null || !member.exists()) {
+
+						return ValidationStatus.error("The provided script does not exist in the workspace!");
+
+					}
+
+					return ValidationStatus.ok();
+
+				}
+
+
+			};
+
+			final UpdateValueStrategy targetToModel = new UpdateValueStrategy() //
+			        .setAfterConvertValidator(validator) //
+			;
+
+			final ISWTObservableValue target = WidgetProperties.text(SWT.Modify) //
+			        .observe(text) //
+			;
+
+			final Binding binding = mDataBindingContext.bindValue(target, mWorkingSetScript, targetToModel, null);
+
+			ControlDecorationSupport.create(binding, SWT.LEFT | SWT.TOP);
+		}
+
+		final WizardPageSupport wizardPageSupport = WizardPageSupport.create(this, mDataBindingContext);
+		wizardPageSupport.setValidationMessageProvider(new ValidationMessageProvider() {
+
+
+			@Override
+			public String getMessage( final ValidationStatusProvider pStatusProvider ) {
+
+				final String message = super.getMessage(pStatusProvider);
+				if (message != null) {
+
+					return message;
+
+				}
+
+				return "Enter a working set label and name and select the script that makes up the content of the working set.";
+
 			}
 
+
 		});
+
+		// provide a clean start
+		setErrorMessage(null);
+		setMessage("Enter a working set label and name and select the script that makes up the content of the working set.");
 
 	}
 
@@ -238,9 +373,9 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 	@Override
 	public void finish() {
 
-		final String workingSetLabel = mWorkingSetLabel.getText().trim();
-		final String workingSetName = mWorkingSetName.getText().trim();
-		final String workingSetScript = mWorkingSetScript.getText().trim();
+		final String workingSetLabel = (String) mWorkingSetLabel.getValue();
+		final String workingSetName = (String) mWorkingSetName.getValue();
+		final String workingSetScript = (String) mWorkingSetScript.getValue();
 
 		if (mWorkingSet == null) {
 
@@ -254,6 +389,21 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 
 		JSWorkingSetPrefs.setName(mWorkingSet, workingSetName.trim());
 		JSWorkingSetPrefs.setScript(mWorkingSet, workingSetScript.trim());
+
+	}
+
+
+	@Override
+	public void dispose() {
+
+		if (mDataBindingContext != null) {
+
+			mDataBindingContext.dispose();
+			mDataBindingContext = null;
+
+		}
+
+		super.dispose();
 
 	}
 
