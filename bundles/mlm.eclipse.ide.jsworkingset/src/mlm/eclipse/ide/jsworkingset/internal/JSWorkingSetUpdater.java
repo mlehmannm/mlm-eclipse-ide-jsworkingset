@@ -164,6 +164,8 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 		Activator.getDefault().getPreferenceStore().addPropertyChangeListener(mPropertyChangeListener);
 
+		// TODO register for working set changes (name)
+
 	}
 
 
@@ -337,7 +339,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 		if (Activator.DEBUG) {
 
 			final String label = pWorkingSetData.workingSet.getLabel();
-			final String message = String.format("Working set '%s' updated in %d ms.", label, elapsed);
+			final String message = String.format("Working set '%s' updated in %d ms.", label, elapsed); //$NON-NLS-1$
 			Activator.log(IStatus.INFO, message);
 
 		}
