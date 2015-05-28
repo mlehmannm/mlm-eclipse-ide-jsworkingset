@@ -301,6 +301,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 		}
 
 		// check for updates to scripts
+		// TODO check for move
 		for (final WorkingSetData workingSetData : mWorkingSets.values()) {
 
 			if (workingSetData.scriptFile != null) {
