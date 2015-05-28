@@ -1,4 +1,4 @@
-// svnkit.js
+// non-shared.js
 // 
 // Global Variables
 //
@@ -13,14 +13,12 @@
 // imports
 var Arrays = java.util.Arrays;
 var IAdaptableArr = Java.type("org.eclipse.core.runtime.IAdaptable[]");
-var repoRoot = "http://svn.svnkit.com/repos/svnkit";
 
-// filtered projects
+// filter
 var filteredProjects = Arrays.stream(projects)
 	.filter(function(p) p.isOpen()) // open projects
-	.filter(function(p) subclipse.isManagedBySubclipse(p)) // by subclipse-managed
-	.filter(function(p) subclipse.repositoryRoot(p).startsWith(repoRoot)) // by same repository root url
-	.toArray(function(size)  new IAdaptableArr(size)) // to sized array
+	.filter(function(p) !team.isShared(p)) // shared projects
+	.toArray(function(size) new IAdaptableArr(size)) // to sized array
 	;
 
 // adapt
@@ -28,4 +26,4 @@ var adaptedProjects = workingSet.adaptElements(filteredProjects)
 
 // update
 workingSet.setElements(adaptedProjects);
-workingSet.setLabel("SVNKit (" + adaptedProjects.length + " of " + projects.length + ")");
+workingSet.setLabel("Non-shared (" + adaptedProjects.length + " of " + projects.length + ")");

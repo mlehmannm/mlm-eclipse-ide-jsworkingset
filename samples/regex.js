@@ -10,7 +10,7 @@
 //		the plug-in log
 //
 
-var re = /org\.tigris\.subversion\..+/i;
+var re = /mlm\.eclipse\.jsworkingset\..+/i;
 regex.configureWorkingSetByRegex(workingSet, re, function(pWorkingSet, pProjects, pAdaptedProjects) {
-	pWorkingSet.setLabel("org.tigris.subversion.* (" + pAdaptedProjects.length + " of " + pProjects.length + ")");
+	pWorkingSet.setLabel("mlm.eclipse.jsworkingset.* (" + pAdaptedProjects.length + " of " + pProjects.length + ")");
 });

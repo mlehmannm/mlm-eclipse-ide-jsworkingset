@@ -1,4 +1,4 @@
-// open.js
+// svnkit.js
 // 
 // Global Variables
 //
@@ -15,8 +15,11 @@ var Arrays = java.util.Arrays;
 var IAdaptableArr = Java.type("org.eclipse.core.runtime.IAdaptable[]");
 
 // filter
+var repoRoot = "http://svn.svnkit.com/repos/svnkit";
 var filteredProjects = Arrays.stream(projects)
 	.filter(function(p) p.isOpen()) // open projects
+	.filter(function(p) subclipse.isManagedBySubclipse(p)) // by subclipse-managed
+	.filter(function(p) subclipse.repositoryRoot(p).startsWith(repoRoot)) // by same repository root url
 	.toArray(function(size) new IAdaptableArr(size)) // to sized array
 	;
 
@@ -25,4 +28,4 @@ var adaptedProjects = workingSet.adaptElements(filteredProjects)
 
 // update
 workingSet.setElements(adaptedProjects);
-workingSet.setLabel("Open (" + adaptedProjects.length + " of " + projects.length + ")");
+workingSet.setLabel("SVNKit (" + adaptedProjects.length + " of " + projects.length + ")");
