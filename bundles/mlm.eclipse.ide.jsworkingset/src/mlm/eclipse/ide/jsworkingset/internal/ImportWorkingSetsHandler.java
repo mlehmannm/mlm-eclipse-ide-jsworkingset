@@ -48,16 +48,38 @@ public class ImportWorkingSetsHandler extends AbstractHandler {
 	@Override
 	public Object execute( final ExecutionEvent pEvent ) throws ExecutionException {
 
+		final long startTime = System.currentTimeMillis();
+
+		execute0(pEvent);
+
+		final long endTime = System.currentTimeMillis();
+
+		final long elapsed = endTime - startTime;
+
+		if (Activator.DEBUG) {
+
+			final String message = String.format("Imported working sets in %d ms.", elapsed); //$NON-NLS-1$
+			Activator.log(IStatus.INFO, message);
+
+		}
+
+		return null;
+
+	}
+
+
+	private void execute0( final ExecutionEvent pEvent ) {
+
 		final ISelection selection = HandlerUtil.getCurrentSelection(pEvent);
 		if (selection == null || selection.isEmpty()) {
 
-			return null;
+			return;
 
 		}
 
 		if (!(selection instanceof IStructuredSelection)) {
 
-			return null;
+			return;
 
 		}
 
@@ -116,7 +138,6 @@ public class ImportWorkingSetsHandler extends AbstractHandler {
 
 		}
 
-		return null;
 
 	}
 
