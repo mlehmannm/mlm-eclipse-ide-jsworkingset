@@ -137,14 +137,14 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 
 		// working set label
 		{
+			final String workingSetLabel = mWorkingSet != null ? mWorkingSet.getLabel() : ""; //$NON-NLS-1$
 			mWorkingSetLabel = WritableValue.withValueType(String.class);
+			mWorkingSetLabel.setValue(workingSetLabel);
 
 			final Label label = new Label(composite, SWT.WRAP);
 			label.setText("Label:");
 
-			final String workingSetLabel = mWorkingSet != null ? mWorkingSet.getLabel() : ""; //$NON-NLS-1$
 			final Text text = new Text(composite, SWT.BORDER | SWT.SINGLE);
-			text.setText(workingSetLabel);
 			text.setLayoutData(GridDataFactory.swtDefaults() //
 			        .align(SWT.FILL, SWT.CENTER) //
 			        .grab(true, false) //
@@ -181,20 +181,21 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 			;
 
 			final Binding binding = mDataBindingContext.bindValue(target, mWorkingSetLabel, targetToModel, null);
+			binding.getValidationStatus().setValue(ValidationStatus.ok());
 
 			ControlDecorationSupport.create(binding, SWT.LEFT | SWT.TOP);
 		}
 
 		// working set name
 		{
+			final String workingSetName = JSWorkingSetPrefs.getName(mWorkingSet);
 			mWorkingSetName = WritableValue.withValueType(String.class);
+			mWorkingSetName.setValue(workingSetName);
 
 			final Label label = new Label(composite, SWT.WRAP);
 			label.setText("Name:");
 
-			final String workingSetName = JSWorkingSetPrefs.getName(mWorkingSet);
 			final Text text = new Text(composite, SWT.BORDER | SWT.SINGLE);
-			text.setText(workingSetName != null ? workingSetName : ""); //$NON-NLS-1$
 			text.setLayoutData(GridDataFactory.swtDefaults() //
 			        .align(SWT.FILL, SWT.CENTER) //
 			        .grab(true, false) //
@@ -238,14 +239,14 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 
 		// script
 		{
+			final String workingSetScript = JSWorkingSetPrefs.getScript(mWorkingSet);
 			mWorkingSetScript = WritableValue.withValueType(String.class);
+			mWorkingSetScript.setValue(workingSetScript);
 
 			final Label label = new Label(composite, SWT.WRAP);
 			label.setText("Script:");
 
-			final String workingSetScript = JSWorkingSetPrefs.getScript(mWorkingSet);
 			final Text text = new Text(composite, SWT.BORDER | SWT.SINGLE);
-			text.setText(workingSetScript != null ? workingSetScript : ""); //$NON-NLS-1$
 			text.setLayoutData(GridDataFactory.swtDefaults() //
 			        .align(SWT.FILL, SWT.CENTER) //
 			        .grab(true, false) //
