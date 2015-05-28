@@ -33,7 +33,7 @@ call git add .
 call git config --local --add user.email %1
 call git commit -q -m "new release published"
 call git push -q
-echo git push origin gh-pages:gh-pages
+echo git push origin master gh-pages
 goto end
 
 :noemail
