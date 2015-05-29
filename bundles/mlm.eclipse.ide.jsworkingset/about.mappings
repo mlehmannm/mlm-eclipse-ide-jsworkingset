@@ -1,0 +1,4 @@
+#UpdateTrigger=201505281300
+0=${git.remote.origin.url}
+1=${git.branch}
+2=${git.commit.id}

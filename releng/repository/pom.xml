@@ -16,6 +16,11 @@
 	<artifactId>jsworkingset-repository</artifactId>
 	<packaging>eclipse-repository</packaging>
 
+	<properties>
+		<!-- enable deployment as eclipse-repository is the only artifact of of interest in a tycho-based build -->
+		<maven.deploy.skip>false</maven.deploy.skip>
+	</properties>
+
 	<build>
 		<plugins>
 			<plugin>
