@@ -70,7 +70,8 @@
 				<version>${tycho-version}</version>
 				<configuration>
 					<!-- this needs a properly configured toolchains.xml -->
-					<useJDK>BREE</useJDK>
+					<!-- Travis CI doesn't have one -->
+					<!-- <useJDK>BREE</useJDK> -->
 				</configuration>
 			</plugin>
 			<plugin>
