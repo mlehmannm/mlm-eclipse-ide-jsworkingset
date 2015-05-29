@@ -26,7 +26,6 @@ call git rm -q -r *
 
 @rem prepare new update-site
 robocopy /E /NP "%~dp0\target\repository" .\ >nul
-robocopy /E /NP "%~dp0\root-files" .\ >nul
 
 @rem commit
 call git add .
