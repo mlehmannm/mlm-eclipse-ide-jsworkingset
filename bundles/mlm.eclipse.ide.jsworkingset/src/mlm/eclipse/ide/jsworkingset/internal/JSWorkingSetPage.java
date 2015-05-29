@@ -120,6 +120,7 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 		super(JSWorkingSetPage.class.getSimpleName());
 
 		setTitle("JavaScript-based Working Set");
+		setImageDescriptor(Activator.getImageDescriptor("icons/full/wizban/workset_wiz.png")); //$NON-NLS-1$
 
 	}
 

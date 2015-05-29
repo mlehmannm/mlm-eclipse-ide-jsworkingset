@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde?>
+<!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
+<target name="Eclipse-4.3 (Kepler)" sequenceNumber="1432930599">
+  <locations>
+    <location includeMode="slicer" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="true" type="InstallableUnit">
+      <unit id="org.eclipse.sdk.ide" version="0.0.0"/>
+      <unit id="org.eclipse.pde" version="0.0.0"/>
+      <unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ecf" version="0.0.0"/>
+      <unit id="org.eclipse.ecf.filetransfer" version="0.0.0"/>
+      <unit id="org.eclipse.ecf.identity" version="0.0.0"/>
+      <unit id="org.eclipse.ecf.provider.filetransfer" version="0.0.0"/>
+      <repository id="eclipse-kepler-sr2" location="http://download.eclipse.org/releases/kepler/201402280900/"/>
+    </location>
+    <location includeMode="slicer" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="true" type="InstallableUnit">
+      <unit id="org.apache.log4j" version="0.0.0"/>
+      <unit id="org.junit" version="0.0.0"/>
+      <unit id="org.hamcrest" version="0.0.0"/>
+      <unit id="org.hamcrest.core" version="0.0.0"/>
+      <unit id="org.hamcrest.integration" version="0.0.0"/>
+      <unit id="org.hamcrest.text" version="0.0.0"/>
+      <unit id="org.hamcrest.library" version="0.0.0"/>
+      <unit id="org.mockito" version="0.0.0"/>
+      <unit id="org.objenesis" version="0.0.0"/>
+      <repository id="orbit-luna-sr2" location="http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/"/>
+    </location>
+    <location includeMode="slicer" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="true" type="InstallableUnit">
+      <unit id="org.eclipse.swtbot.eclipse.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.swtbot.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.swtbot.eclipse.test.junit.feature.group" version="0.0.0"/>
+      <repository id="swtbot-2.2.1" location="http://download.eclipse.org/technology/swtbot/releases/2.2.1/"/>
+    </location>
+    <location includeMode="slicer" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="true" type="InstallableUnit">
+      <unit id="org.tigris.subversion.subclipse.feature.group" version="0.0.0"/>
+      <unit id="org.tigris.subversion.clientadapter.feature.feature.group" version="0.0.0"/>
+      <unit id="org.tigris.subversion.clientadapter.javahl.feature.feature.group" version="0.0.0"/>
+      <repository id="subclipse-1.10.x" location="http://subclipse.tigris.org/update_1.10.x/"/>
+    </location>
+  </locations>
+</target>

@@ -10,7 +10,7 @@
 		<groupId>mlm.eclipse.ide.jsworkingset</groupId>
 		<artifactId>jsworkingset-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
-		<relativePath>../../releng/parent</relativePath>
+		<relativePath>../..</relativePath>
 	</parent>
 
 	<artifactId>mlm.eclipse.ide.jsworkingset</artifactId>

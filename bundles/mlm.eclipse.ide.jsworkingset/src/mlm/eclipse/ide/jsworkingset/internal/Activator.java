@@ -19,6 +19,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.osgi.service.debug.DebugOptions;
 import org.eclipse.osgi.service.debug.DebugOptionsListener;
 import org.eclipse.osgi.service.debug.DebugTrace;
@@ -188,7 +189,7 @@ public final class Activator extends AbstractUIPlugin implements DebugOptionsLis
 	 *
 	 */
 
-	public static ScriptEngine newScriptEngine( final ScriptEngineManager pManager ) {
+	public static final ScriptEngine newScriptEngine( final ScriptEngineManager pManager ) {
 
 		final Thread currentThread = Thread.currentThread();
 		final ClassLoader contextClassLoader = currentThread.getContextClassLoader();
@@ -204,6 +205,27 @@ public final class Activator extends AbstractUIPlugin implements DebugOptionsLis
 			currentThread.setContextClassLoader(contextClassLoader);
 
 		}
+
+	}
+
+
+	/**
+	 *
+	 * Convenience method to retrieve images located in this bundle.
+	 *
+	 * @param pImageFilePath
+	 *            bundle relative path to the image
+	 * @return the image descriptor
+	 *
+	 * @see AbstractUIPlugin#imageDescriptorFromPlugin(String, String)
+	 *
+	 * @since mlm.eclipse.ide.jsworkingset 1.0
+	 *
+	 */
+
+	public static final ImageDescriptor getImageDescriptor( final String pImageFilePath ) {
+
+		return AbstractUIPlugin.imageDescriptorFromPlugin(ID_PLUGIN, pImageFilePath);
 
 	}
 
