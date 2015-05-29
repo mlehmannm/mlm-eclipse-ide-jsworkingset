@@ -32,6 +32,7 @@
    <extension
          point="org.eclipse.ui.workingSets">
       <workingSet
+            description="%JSWorkingSet.desc"
             icon="platform:/plugin/org.eclipse.ui.ide/icons/full/obj16/workset.png"
             id="mlm.eclipse.ide.jsworkingset.JSWorkingSet"
             name="%JSWorkingSet.name"
