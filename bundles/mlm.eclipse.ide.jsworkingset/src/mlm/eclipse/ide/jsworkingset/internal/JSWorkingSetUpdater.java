@@ -13,11 +13,15 @@
 package mlm.eclipse.ide.jsworkingset.internal;
 
 
+import static java.util.stream.Collectors.joining;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.text.Collator;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -250,13 +254,13 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 		}
 
 		final String property = pEvent.getProperty();
-		if (!property.startsWith(JSWorkingSetPrefs.PREF_KEY__PREFIX)) {
+		if (!JSWorkingSetPrefs.isImportantProperty(property)) {
 
 			return;
 
 		}
 
-		final String workingSetName = property.substring(JSWorkingSetPrefs.PREF_KEY__PREFIX.length());
+		final String workingSetName = JSWorkingSetPrefs.extractWorkingSetNameFromProperty(property);
 
 		for (final WorkingSetData workingSetData : mWorkingSets.values()) {
 
@@ -290,6 +294,18 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 			final int projectFlags = affectedChildren[0].getFlags();
 			if ((projectFlags & ~IResourceDelta.MARKERS) != IResourceDelta.NO_CHANGE) {
 
+				if (Activator.DEBUG) {
+
+					final String projects = Arrays.stream(affectedChildren) //
+					        .map(e -> e.getResource().getName()) //
+					        .sorted(Collator.getInstance()) //
+					        .collect(joining(", ")) //$NON-NLS-1$
+					;
+					final String message = String.format("Changes detected in projects '%s'.", projects); //$NON-NLS-1$
+					Activator.log(IStatus.INFO, message);
+
+				}
+
 				for (final WorkingSetData workingSetData : mWorkingSets.values()) {
 
 					updateWorkingSetData(workingSetData);
@@ -301,17 +317,44 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 		}
 
 		// check for updates to scripts
-		// TODO check for move
 		for (final WorkingSetData workingSetData : mWorkingSets.values()) {
 
 			if (workingSetData.scriptFile != null) {
+
+				// TODO check for move
 
 				final IPath scriptPath = workingSetData.scriptFile.getFullPath();
 				final IResourceDelta scriptDelta = delta.findMember(scriptPath);
 				if (scriptDelta != null) {
 
+					System.err.println(scriptDelta);
+
 					final int scriptFlags = scriptDelta.getFlags();
-					if ((scriptFlags & ~IResourceDelta.MARKERS) != IResourceDelta.NO_CHANGE) {
+					if ((scriptFlags & IResourceDelta.MOVED_TO) != 0) {
+
+						final IPath oldScriptPath = workingSetData.scriptFile.getFullPath();
+						final IPath newScriptPath = scriptDelta.getMovedToPath();
+
+						if (Activator.DEBUG) {
+
+							final String message = String.format("Script moved from '%s' to '%s'.", oldScriptPath, newScriptPath); //$NON-NLS-1$
+							Activator.log(IStatus.INFO, message);
+
+						}
+
+						JSWorkingSetPrefs.setScript(workingSetData.workingSet, newScriptPath.toString());
+
+						resetWorkingSetData(workingSetData);
+						updateWorkingSetData(workingSetData);
+
+					} else if ((scriptFlags & ~IResourceDelta.MARKERS) != IResourceDelta.NO_CHANGE) {
+
+						if (Activator.DEBUG) {
+
+							final String message = String.format("Change detected in script '%s'.", scriptPath); //$NON-NLS-1$
+							Activator.log(IStatus.INFO, message);
+
+						}
 
 						resetWorkingSetData(workingSetData);
 						updateWorkingSetData(workingSetData);

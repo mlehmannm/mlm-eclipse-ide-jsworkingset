@@ -39,7 +39,7 @@ public final class JSWorkingSetPrefs {
 	 *
 	 */
 
-	public static final String PREF_KEY__PREFIX = "ws."; //$NON-NLS-1$
+	private static final String PREF_KEY__PREFIX = "ws."; //$NON-NLS-1$
 
 
 	/**
@@ -48,7 +48,7 @@ public final class JSWorkingSetPrefs {
 	 *
 	 */
 
-	public static final String PREF_KEY__NAME_PREFIX = PREF_KEY__PREFIX + "name."; //$NON-NLS-1$
+	private static final String PREF_KEY__NAME_PREFIX = PREF_KEY__PREFIX + "name."; //$NON-NLS-1$
 
 
 	/**
@@ -57,7 +57,7 @@ public final class JSWorkingSetPrefs {
 	 *
 	 */
 
-	public static final String PREF_KEY__SCRIPT_PREFIX = PREF_KEY__PREFIX + "script."; //$NON-NLS-1$
+	private static final String PREF_KEY__SCRIPT_PREFIX = PREF_KEY__PREFIX + "script."; //$NON-NLS-1$
 
 
 	/**
@@ -71,6 +71,56 @@ public final class JSWorkingSetPrefs {
 	private JSWorkingSetPrefs() {
 
 		throw new Error();
+
+	}
+
+
+	/**
+	 *
+	 * TODO
+	 *
+	 * @param pProperty
+	 *            TODO
+	 *
+	 * @return the name or <code>null</code>
+	 *
+	 * @since mlm.eclipse.ide.jsworkingset 1.0
+	 *
+	 */
+
+	public static boolean isImportantProperty( final String pProperty ) {
+
+		return pProperty.startsWith(JSWorkingSetPrefs.PREF_KEY__PREFIX);
+
+	}
+
+
+	/**
+	 *
+	 * TODO
+	 *
+	 * @param pProperty
+	 *            TODO
+	 *
+	 * @return the name or <code>null</code>
+	 *
+	 * @since mlm.eclipse.ide.jsworkingset 1.0
+	 *
+	 */
+
+	public static String extractWorkingSetNameFromProperty( final String pProperty ) {
+
+		if (pProperty.startsWith(PREF_KEY__NAME_PREFIX)) {
+
+			return pProperty.substring(PREF_KEY__NAME_PREFIX.length());
+
+		} else if (pProperty.startsWith(PREF_KEY__SCRIPT_PREFIX)) {
+
+			return pProperty.substring(PREF_KEY__SCRIPT_PREFIX.length());
+
+		}
+
+		return null;
 
 	}
 

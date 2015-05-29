@@ -65,7 +65,7 @@ import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
 public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 
 
-	// TODO make script editable / history?
+	// TODO history or path completion for script?
 
 
 	private DataBindingContext mDataBindingContext;
