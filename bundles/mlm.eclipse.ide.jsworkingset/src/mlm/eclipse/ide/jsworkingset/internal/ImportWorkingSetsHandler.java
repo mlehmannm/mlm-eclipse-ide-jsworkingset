@@ -52,11 +52,11 @@ public class ImportWorkingSetsHandler extends AbstractHandler {
 
 		execute0(pEvent);
 
-		final long endTime = System.currentTimeMillis();
-
-		final long elapsed = endTime - startTime;
-
 		if (Activator.DEBUG) {
+
+			final long endTime = System.currentTimeMillis();
+
+			final long elapsed = endTime - startTime;
 
 			final String message = String.format("Imported working sets in %d ms.", elapsed); //$NON-NLS-1$
 			Activator.log(IStatus.INFO, message);

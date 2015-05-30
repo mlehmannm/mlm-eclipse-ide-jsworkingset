@@ -59,6 +59,7 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.IWorkingSetUpdater;
+import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.Bundle;
 
 
@@ -130,17 +131,37 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 	/**
 	 *
-	 * The property change listener that listens for changes in the preferences.
+	 * The property change listener that listens for changes in the preference store.
 	 *
 	 */
 
-	private final IPropertyChangeListener mPropertyChangeListener = new IPropertyChangeListener() {
+	private final IPropertyChangeListener mPreferenceStorePropertyChangeListener = new IPropertyChangeListener() {
 
 
 		@Override
 		public void propertyChange( final PropertyChangeEvent pEvent ) {
 
-			handlePropertyChange(pEvent);
+			handlePreferenceStorePropertyChange(pEvent);
+
+		}
+
+
+	};
+
+
+	/**
+	 *
+	 * The property change listener that listens for changes in the preference store.
+	 *
+	 */
+
+	private final IPropertyChangeListener mWorkingSetManagerPropertyChangeListener = new IPropertyChangeListener() {
+
+
+		@Override
+		public void propertyChange( final PropertyChangeEvent pEvent ) {
+
+			handleWorkingSetManagerPropertyChange(pEvent);
 
 		}
 
@@ -166,9 +187,9 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(mResourceChangeListener, IResourceChangeEvent.POST_CHANGE);
 
-		Activator.getDefault().getPreferenceStore().addPropertyChangeListener(mPropertyChangeListener);
+		Activator.getDefault().getPreferenceStore().addPropertyChangeListener(mPreferenceStorePropertyChangeListener);
 
-		// TODO register for working set changes (name)
+		PlatformUI.getWorkbench().getWorkingSetManager().addPropertyChangeListener(mWorkingSetManagerPropertyChangeListener);
 
 	}
 
@@ -244,8 +265,15 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 	}
 
+	private void handleWorkingSetManagerPropertyChange( final PropertyChangeEvent pEvent ) {
 
-	private void handlePropertyChange( final PropertyChangeEvent pEvent ) {
+		System.err.println(pEvent);
+		// TODO register for working set changes (name)
+
+	}
+
+
+	private void handlePreferenceStorePropertyChange( final PropertyChangeEvent pEvent ) {
 
 		if (mWorkingSets.isEmpty()) {
 
@@ -321,13 +349,9 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 			if (workingSetData.scriptFile != null) {
 
-				// TODO check for move
-
 				final IPath scriptPath = workingSetData.scriptFile.getFullPath();
 				final IResourceDelta scriptDelta = delta.findMember(scriptPath);
 				if (scriptDelta != null) {
-
-					System.err.println(scriptDelta);
 
 					final int scriptFlags = scriptDelta.getFlags();
 					if ((scriptFlags & IResourceDelta.MOVED_TO) != 0) {
@@ -376,11 +400,11 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 		updateWorkingSetData0(pWorkingSetData);
 
-		final long endTime = System.currentTimeMillis();
-
-		final long elapsed = endTime - startTime;
-
 		if (Activator.DEBUG) {
+
+			final long endTime = System.currentTimeMillis();
+
+			final long elapsed = endTime - startTime;
 
 			final String label = pWorkingSetData.workingSet.getLabel();
 			final String message = String.format("Working set '%s' updated in %d ms.", label, elapsed); //$NON-NLS-1$
@@ -618,9 +642,9 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 	@Override
 	public void dispose() {
 
-		// TODO unregister from working set changes (name)
+		PlatformUI.getWorkbench().getWorkingSetManager().removePropertyChangeListener(mWorkingSetManagerPropertyChangeListener);
 
-		Activator.getDefault().getPreferenceStore().removePropertyChangeListener(mPropertyChangeListener);
+		Activator.getDefault().getPreferenceStore().removePropertyChangeListener(mPreferenceStorePropertyChangeListener);
 
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(mResourceChangeListener);
 
