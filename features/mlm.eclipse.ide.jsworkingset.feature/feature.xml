@@ -4,7 +4,9 @@
       label="%feature.name"
       version="1.0.0.qualifier"
       provider-name="%feature.provider"
-      plugin="mlm.eclipse.ide.jsworkingset">
+      plugin="mlm.eclipse.ide.jsworkingset"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description>
       %description
@@ -14,6 +16,10 @@
       %copyright
    </copyright>
 
+   <license url="%licenseURL">
+      %license
+   </license>
+   
    <plugin
          id="mlm.eclipse.ide.jsworkingset"
          download-size="0"

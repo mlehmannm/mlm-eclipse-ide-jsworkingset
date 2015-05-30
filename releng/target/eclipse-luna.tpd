@@ -12,6 +12,12 @@ location eclipse-luna-sr2 "http://download.eclipse.org/releases/luna/20150227100
 
 }
 
+location eclipse-license "http://download.eclipse.org/cbi/updates/license/" {
+	
+	org.eclipse.license.feature.group lazy
+	
+}
+
 location orbit-luna-sr2 "http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/" {
 	
 	org.apache.log4j lazy

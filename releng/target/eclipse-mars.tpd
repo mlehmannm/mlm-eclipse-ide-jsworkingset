@@ -12,6 +12,12 @@ location eclipse-mars "http://download.eclipse.org/releases/mars/" {
 
 }
 
+location eclipse-license "http://download.eclipse.org/cbi/updates/license/" {
+	
+	org.eclipse.license.feature.group lazy
+	
+}
+
 location orbit-mars "http://download.eclipse.org/tools/orbit/downloads/drops/R20150519210750/repository/" {
 	
 	org.apache.log4j lazy

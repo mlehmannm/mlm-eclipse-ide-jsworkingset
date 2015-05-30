@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Eclipse-4.4 (Luna)" sequenceNumber="1432927247">
+<target name="Eclipse-4.4 (Luna)" sequenceNumber="1432934268">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="true" type="InstallableUnit">
       <unit id="org.eclipse.sdk.ide" version="0.0.0"/>
@@ -12,6 +12,10 @@
       <unit id="org.eclipse.ecf.identity" version="0.0.0"/>
       <unit id="org.eclipse.ecf.provider.filetransfer" version="0.0.0"/>
       <repository id="eclipse-luna-sr2" location="http://download.eclipse.org/releases/luna/201502271000/"/>
+    </location>
+    <location includeMode="slicer" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="true" type="InstallableUnit">
+      <unit id="org.eclipse.license.feature.group" version="0.0.0"/>
+      <repository id="eclipse-license" location="http://download.eclipse.org/cbi/updates/license/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="true" type="InstallableUnit">
       <unit id="org.apache.log4j" version="0.0.0"/>
