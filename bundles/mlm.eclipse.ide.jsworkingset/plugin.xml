@@ -87,5 +87,21 @@
          </command>
       </menuContribution>
    </extension>
+   <extension
+         point="org.eclipse.ui.importWizards">
+      <wizard
+            class="mlm.eclipse.ide.jsworkingset.internal.ImportWizard"
+            icon="icons/full/obj16/workset.png"
+            id="mlm.eclipse.ide.jsworkingset.ImportWizard"
+            name="%ImportWizard.name">
+         <description>
+            %ImportWizard.desc
+         </description>
+         <selection
+               class="org.eclipse.core.resources.IFile"
+               name="*.js">
+         </selection>
+      </wizard>
+   </extension>
 
 </plugin>
