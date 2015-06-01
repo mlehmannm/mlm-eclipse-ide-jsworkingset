@@ -50,6 +50,7 @@ import org.eclipse.ui.IWorkingSetManager;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.IWorkingSetPage;
 import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
+import org.eclipse.ui.dialogs.SelectionDialog;
 
 
 /**
@@ -65,8 +66,11 @@ import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
 public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 
 
-	// TODO history or path completion for script?
-
+	/**
+	 *
+	 * The data-binding context to glue everything together.
+	 *
+	 */
 
 	private DataBindingContext mDataBindingContext;
 
@@ -146,6 +150,7 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 			label.setText("Label:");
 
 			final Text text = new Text(composite, SWT.BORDER | SWT.SINGLE);
+			text.setToolTipText("The label for the working set.");
 			text.setLayoutData(GridDataFactory.swtDefaults() //
 			        .align(SWT.FILL, SWT.CENTER) //
 			        .grab(true, false) //
@@ -197,6 +202,7 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 			label.setText("Name:");
 
 			final Text text = new Text(composite, SWT.BORDER | SWT.SINGLE);
+			text.setToolTipText("The name for the working set.");
 			text.setLayoutData(GridDataFactory.swtDefaults() //
 			        .align(SWT.FILL, SWT.CENTER) //
 			        .grab(true, false) //
@@ -248,13 +254,20 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 			label.setText("Script:");
 
 			final Text text = new Text(composite, SWT.BORDER | SWT.SINGLE);
+			text.setToolTipText("Enter a workspace file.");
 			text.setLayoutData(GridDataFactory.swtDefaults() //
 			        .align(SWT.FILL, SWT.CENTER) //
 			        .grab(true, false) //
 			        .create());
 
+			// TODO history or path completion for script?
+
 			final Button button = new Button(composite, SWT.PUSH);
-			button.setText("..."); //$NON-NLS-1$
+			button.setText("Browse..."); //$NON-NLS-1$
+			button.setLayoutData(GridDataFactory.swtDefaults() //
+			        .align(SWT.FILL, SWT.CENTER) //
+			        .grab(false, false) //
+			        .create());
 			button.addSelectionListener(new SelectionAdapter() {
 
 
@@ -263,7 +276,7 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 
 					final Shell shell = button.getShell();
 					final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-					final ResourceListSelectionDialog dialog = new ResourceListSelectionDialog(shell, root, IResource.FILE);
+					final SelectionDialog dialog = new ResourceListSelectionDialog(shell, root, IResource.FILE);
 					dialog.setTitle("Select a JavaScript file");
 					if (dialog.open() == Window.OK) {
 
