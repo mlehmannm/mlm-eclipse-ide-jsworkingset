@@ -58,6 +58,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.IWorkingSet;
+import org.eclipse.ui.IWorkingSetManager;
 import org.eclipse.ui.IWorkingSetUpdater;
 import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.Bundle;
@@ -131,7 +132,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 	/**
 	 *
-	 * The property change listener that listens for changes in the preference store.
+	 * The property change listener that listens for changes to the preference store.
 	 *
 	 */
 
@@ -151,7 +152,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 	/**
 	 *
-	 * The property change listener that listens for changes in the preference store.
+	 * The property change listener that listens for changes to the working set manager.
 	 *
 	 */
 
@@ -256,6 +257,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 	public boolean remove( final IWorkingSet pWorkingSet ) {
 
 		JSWorkingSetPrefs.setScript(pWorkingSet, null);
+		JSWorkingSetPrefs.setName(pWorkingSet, null);
 
 		final WorkingSetData workingSetData = mWorkingSets.remove(pWorkingSet);
 
@@ -265,10 +267,17 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 	}
 
+
 	private void handleWorkingSetManagerPropertyChange( final PropertyChangeEvent pEvent ) {
 
-		System.err.println(pEvent);
-		// TODO register for working set changes (name)
+		if (IWorkingSetManager.CHANGE_WORKING_SET_NAME_CHANGE.equals(pEvent.getProperty())) {
+
+			final IWorkingSet changedWS = (IWorkingSet) pEvent.getNewValue();
+
+			// TODO
+			System.err.println(pEvent);
+
+		}
 
 	}
 
@@ -424,7 +433,6 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 			final String scriptPathStr = JSWorkingSetPrefs.getScript(pWorkingSetData.workingSet);
 			if (scriptPathStr == null) {
 
-				// TODO change name/icon?
 				final String name = JSWorkingSetPrefs.getName(pWorkingSetData.workingSet);
 				pWorkingSetData.workingSet.setLabel(name != null ? name : "working set");
 				pWorkingSetData.workingSet.setElements(new IAdaptable[0]);
@@ -437,7 +445,6 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 			final IFile scriptFile = workspaceRoot.getFile(scriptPath);
 			if (!scriptFile.isAccessible()) {
 
-				// TODO change name/icon?
 				final String name = JSWorkingSetPrefs.getName(pWorkingSetData.workingSet);
 				pWorkingSetData.workingSet.setLabel(name != null ? name : "working set");
 				pWorkingSetData.workingSet.setElements(new IAdaptable[0]);
@@ -494,7 +501,6 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 				Activator.log(IStatus.ERROR, "Failed to eval script!", ex); //$NON-NLS-1$
 
-				// TODO change name/icon?
 				final String name = JSWorkingSetPrefs.getName(pWorkingSetData.workingSet);
 				pWorkingSetData.workingSet.setLabel(name != null ? name : "working set");
 				pWorkingSetData.workingSet.setElements(new IAdaptable[0]);
@@ -509,7 +515,6 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 		} else {
 
-			// TODO change name/icon?
 			final String name = JSWorkingSetPrefs.getName(pWorkingSetData.workingSet);
 			pWorkingSetData.workingSet.setLabel(name != null ? name : "working set");
 			pWorkingSetData.workingSet.setElements(new IAdaptable[0]);
