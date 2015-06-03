@@ -5,7 +5,7 @@ var subclipse = {};
 subclipse.isManagedBySubclipse = function(pProject) {
 
 	var SVNWorkspaceRoot = org.tigris.subversion.subclipse.core.resources.SVNWorkspaceRoot;
-	// java.lang.System.err.println(pProject.getName() + " => isManagedBySubclipse: " + SVNWorkspaceRoot.isManagedBySubclipse(pProject));
+
 	return SVNWorkspaceRoot.isManagedBySubclipse(pProject);
 
 }
@@ -13,11 +13,21 @@ subclipse.isManagedBySubclipse = function(pProject) {
 subclipse.repositoryRoot = function(pProject) {
 
 	var SVNWorkspaceRoot = org.tigris.subversion.subclipse.core.resources.SVNWorkspaceRoot;
-	var repositoryRoot = SVNWorkspaceRoot.getSVNResourceFor(pProject).getRepository().getRepositoryRoot();
-	// java.lang.System.err.println(pProject.getName() + " => repoRoot: " + repositoryRoot);
-	if (repositoryRoot === null) {
+
+	var repository = SVNWorkspaceRoot.getSVNResourceFor(pProject).getRepository();
+	if (repository === null) {
+
 		return null;
+
 	}
+
+	var repositoryRoot = repository.getRepositoryRoot();
+	if (repositoryRoot === null) {
+
+		return null;
+
+	}
+
 	return repositoryRoot.toString();
 
 }
@@ -25,11 +35,14 @@ subclipse.repositoryRoot = function(pProject) {
 subclipse.url = function(pProject) {
 
 	var SVNWorkspaceRoot = org.tigris.subversion.subclipse.core.resources.SVNWorkspaceRoot;
+
 	var url = SVNWorkspaceRoot.getSVNResourceFor(pProject).getUrl();
-	// java.lang.System.err.println(pProject.getName() + " => url: " + url);
 	if (url === null) {
+
 		return null;
+
 	}
+
 	return url.toString();
 
 }
