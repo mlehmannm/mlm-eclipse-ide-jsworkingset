@@ -343,9 +343,22 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 				}
 
+				final long startTime = System.currentTimeMillis();
+
 				for (final WorkingSetData workingSetData : mWorkingSets.values()) {
 
 					updateWorkingSetData(workingSetData);
+
+				}
+
+				if (Activator.DEBUG) {
+
+					final long endTime = System.currentTimeMillis();
+
+					final long elapsed = endTime - startTime;
+
+					final String message = String.format("Working sets updated in %d ms.", elapsed); //$NON-NLS-1$
+					Activator.log(IStatus.INFO, message);
 
 				}
 
@@ -459,6 +472,8 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 			try {
 
+				final long startTime = System.currentTimeMillis();
+
 				final ScriptEngine engine = Activator.newScriptEngine(mScriptEngineManager);
 				engine.put(ScriptEngine.FILENAME, scriptPathStr);
 
@@ -466,6 +481,17 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 					final Compilable compilable = (Compilable) engine;
 					pWorkingSetData.compiledScript = compilable.compile(reader);
+
+				}
+
+				if (Activator.DEBUG) {
+
+					final long endTime = System.currentTimeMillis();
+
+					final long elapsed = endTime - startTime;
+
+					final String message = String.format("Script '%s' compiled in %d ms.", scriptFile, elapsed); //$NON-NLS-1$
+					Activator.log(IStatus.INFO, message);
 
 				}
 
