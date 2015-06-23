@@ -26,6 +26,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 import javax.script.Bindings;
 import javax.script.Compilable;
@@ -42,7 +43,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceRuleFactory;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
@@ -76,6 +76,12 @@ import org.osgi.framework.Bundle;
 
 public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
+
+	/**
+	 *
+	 * Working set data.
+	 *
+	 */
 
 	private static class WorkingSetData {
 
@@ -172,6 +178,24 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 	/**
 	 *
+	 * Lambda to reset the given working set data.
+	 *
+	 */
+
+	private final Consumer<WorkingSetData> mResetWorkingSetData = wsd -> resetWorkingSetData(wsd);
+
+
+	/**
+	 *
+	 * Lambda to update the given working set data.
+	 *
+	 */
+
+	private final Consumer<WorkingSetData> mUpdateWorkingSetData = wsd -> updateWorkingSetData(wsd);
+
+
+	/**
+	 *
 	 * Constructs a new <code>JSWorkingSetUpdater</code>.
 	 *
 	 * @since mlm.eclipse.ide.jsworkingset 1.0
@@ -243,12 +267,12 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 	@Override
 	public void add( final IWorkingSet pWorkingSet ) {
 
-		final WorkingSetData wsd = new WorkingSetData();
-		wsd.workingSet = pWorkingSet;
+		final WorkingSetData workingSetData = new WorkingSetData();
+		workingSetData.workingSet = pWorkingSet;
 
-		mWorkingSets.put(pWorkingSet, wsd);
+		mWorkingSets.put(pWorkingSet, workingSetData);
 
-		updateWorkingSetData(wsd);
+		runAsUpdateJob(workingSetData, mUpdateWorkingSetData);
 
 	}
 
@@ -303,8 +327,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 			if (workingSetName.equals(workingSetData.workingSet.getName())) {
 
-				resetWorkingSetData(workingSetData);
-				updateWorkingSetData(workingSetData);
+				runAsUpdateJob(workingSetData, mResetWorkingSetData.andThen(mUpdateWorkingSetData));
 
 			}
 
@@ -347,7 +370,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 				for (final WorkingSetData workingSetData : mWorkingSets.values()) {
 
-					updateWorkingSetData(workingSetData);
+					runAsUpdateJob(workingSetData, mUpdateWorkingSetData);
 
 				}
 
@@ -390,8 +413,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 						JSWorkingSetPrefs.setScript(workingSetData.workingSet, newScriptPath.toString());
 
-						resetWorkingSetData(workingSetData);
-						updateWorkingSetData(workingSetData);
+						runAsUpdateJob(workingSetData, mResetWorkingSetData.andThen(mUpdateWorkingSetData));
 
 					} else if ((scriptFlags & ~IResourceDelta.MARKERS) != IResourceDelta.NO_CHANGE) {
 
@@ -402,8 +424,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 						}
 
-						resetWorkingSetData(workingSetData);
-						updateWorkingSetData(workingSetData);
+						runAsUpdateJob(workingSetData, mResetWorkingSetData.andThen(mUpdateWorkingSetData));
 
 					}
 
@@ -416,28 +437,23 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 	}
 
 
-	private void updateWorkingSetData( final WorkingSetData pWorkingSetData ) {
+	private void resetWorkingSetData( final WorkingSetData pWorkingSetData ) {
 
-		final long startTime = System.currentTimeMillis();
+		if (pWorkingSetData == null) {
 
-		updateWorkingSetData0(pWorkingSetData);
-
-		if (Activator.DEBUG) {
-
-			final long endTime = System.currentTimeMillis();
-
-			final long elapsed = endTime - startTime;
-
-			final String label = pWorkingSetData.workingSet.getLabel();
-			final String message = String.format("Working set '%s' updated in %d ms.", label, elapsed); //$NON-NLS-1$
-			Activator.log(IStatus.INFO, message);
+			return;
 
 		}
+
+		deleteMarkers(pWorkingSetData.scriptFile);
+
+		pWorkingSetData.scriptFile = null;
+		pWorkingSetData.compiledScript = null;
 
 	}
 
 
-	private void updateWorkingSetData0( final WorkingSetData pWorkingSetData ) {
+	private void updateWorkingSetData( final WorkingSetData pWorkingSetData ) {
 
 		final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 
@@ -550,58 +566,54 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 	}
 
 
-	private void resetWorkingSetData( final WorkingSetData pWorkingSetData ) {
+	private void runAsUpdateJob( final WorkingSetData pWorkingSetData, final Consumer<WorkingSetData> pConsumer ) {
 
-		if (pWorkingSetData == null) {
-
-			return;
-
-		}
-
-		deleteMarkers(pWorkingSetData.scriptFile);
-
-		pWorkingSetData.scriptFile = null;
-		pWorkingSetData.compiledScript = null;
-
-	}
-
-
-	private void createMarkers( final IResource pResource, final ScriptException pException ) {
-
-		if (pResource == null || !pResource.isAccessible()) {
-
-			return;
-
-		}
-
-		if (!pResource.getFullPath().toString().equals(pException.getFileName())) {
-
-			return;
-
-		}
-
-		final IResourceRuleFactory ruleFactory = pResource.getWorkspace().getRuleFactory();
-		final WorkspaceJob markerJob = new WorkspaceJob("create-markers") {
+		final String workingSetName = JSWorkingSetPrefs.getName(pWorkingSetData.workingSet);
+		final String jobName = String.format("Updating working set '%s'.", workingSetName);
+		final WorkspaceJob updateJob = new WorkspaceJob(jobName) {
 
 
 			@Override
 			public IStatus runInWorkspace( final IProgressMonitor pMonitor ) throws CoreException {
 
-				final IMarker marker = pResource.createMarker(Activator.ID_PROBLEM_MARKER);
-				marker.setAttribute(IMarker.MESSAGE, pException.getMessage());
-				marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
-				marker.setAttribute(IMarker.LINE_NUMBER, pException.getLineNumber());
+				final long startTime = System.currentTimeMillis();
+
+				pConsumer.accept(pWorkingSetData);
+
+				if (Activator.DEBUG) {
+
+					final long endTime = System.currentTimeMillis();
+
+					final long elapsed = endTime - startTime;
+
+					final String label = pWorkingSetData.workingSet.getLabel();
+					final String message = String.format("Working set '%s' updated in %d ms.", label, elapsed); //$NON-NLS-1$
+					Activator.log(IStatus.INFO, message);
+
+				}
 
 				return Status.OK_STATUS;
 
 			}
 
 
+			@Override
+			public String toString() {
+
+				return JSWorkingSetUpdater.class.getSimpleName() + '[' + workingSetName + ']';
+
+			}
+
+
 		};
-		markerJob.setSystem(true);
-		markerJob.setPriority(Job.SHORT);
-		markerJob.setRule(ruleFactory.markerRule(pResource));
-		markerJob.schedule();
+		updateJob.setSystem(true);
+		updateJob.setPriority(Job.SHORT);
+		// TODO updateJob.setRule(ruleFactory.markerRule(pResource));
+		updateJob.schedule();
+
+		final String label = pWorkingSetData.workingSet.getLabel();
+		final String message = String.format("Job to update working set '%s' has been scheduled.", label); //$NON-NLS-1$
+		Activator.log(IStatus.INFO, message);
 
 	}
 
@@ -614,27 +626,44 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 		}
 
-		final IResourceRuleFactory ruleFactory = pResource.getWorkspace().getRuleFactory();
-		final WorkspaceJob markerJob = new WorkspaceJob("create-markers") {
+		int lineNumber;
+		String fileName;
+		if (pException instanceof ScriptException) {
 
+			final ScriptException ex = (ScriptException) pException;
+			lineNumber = ex.getLineNumber();
+			fileName = ex.getFileName();
 
-			@Override
-			public IStatus runInWorkspace( final IProgressMonitor pMonitor ) throws CoreException {
+		} else {
 
-				final IMarker marker = pResource.createMarker(Activator.ID_PROBLEM_MARKER);
-				marker.setAttribute(IMarker.MESSAGE, pException.getMessage());
-				marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+			lineNumber = -1;
+			fileName = null;
 
-				return Status.OK_STATUS;
+		}
+
+		if (fileName != null && !fileName.equals(pResource.getFullPath().toString())) {
+
+			return;
+
+		}
+
+		try {
+
+			final IMarker marker = pResource.createMarker(Activator.ID_PROBLEM_MARKER);
+			marker.setAttribute(IMarker.MESSAGE, pException.getMessage());
+			marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+
+			if (lineNumber > -1) {
+
+				marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
 
 			}
 
+		} catch (final CoreException ex) {
 
-		};
-		markerJob.setSystem(true);
-		markerJob.setPriority(Job.SHORT);
-		markerJob.setRule(ruleFactory.markerRule(pResource));
-		markerJob.schedule();
+			Activator.log(IStatus.ERROR, "Failed to create markers!", ex); //$NON-NLS-1$
+
+		}
 
 	}
 
@@ -647,25 +676,16 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 		}
 
-		final IResourceRuleFactory ruleFactory = pResource.getWorkspace().getRuleFactory();
-		final WorkspaceJob markerJob = new WorkspaceJob("delete-markers") {
+		try {
 
+			pResource.deleteMarkers(Activator.ID_MARKER, false, IResource.DEPTH_ZERO);
+			pResource.deleteMarkers(Activator.ID_PROBLEM_MARKER, false, IResource.DEPTH_ZERO);
 
-			@Override
-			public IStatus runInWorkspace( final IProgressMonitor pMonitor ) throws CoreException {
+		} catch (final CoreException ex) {
 
-				pResource.deleteMarkers(Activator.ID_PROBLEM_MARKER, false, IResource.DEPTH_ZERO);
+			Activator.log(IStatus.ERROR, "Failed to delete markers!", ex); //$NON-NLS-1$
 
-				return Status.OK_STATUS;
-
-			}
-
-
-		};
-		markerJob.setSystem(true);
-		markerJob.setPriority(Job.SHORT);
-		markerJob.setRule(ruleFactory.markerRule(pResource));
-		markerJob.schedule();
+		}
 
 	}
 
