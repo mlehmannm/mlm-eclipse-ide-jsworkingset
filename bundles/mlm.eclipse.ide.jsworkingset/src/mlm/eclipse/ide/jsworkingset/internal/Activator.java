@@ -78,15 +78,6 @@ public final class Activator extends AbstractUIPlugin implements DebugOptionsLis
 
 	/**
 	 *
-	 * The shared instance.
-	 *
-	 */
-
-	private static Activator sSingleton;
-
-
-	/**
-	 *
 	 * Holds the trace.
 	 *
 	 */
@@ -101,6 +92,15 @@ public final class Activator extends AbstractUIPlugin implements DebugOptionsLis
 	 */
 
 	public static boolean DEBUG = false;
+
+
+	/**
+	 *
+	 * The shared instance.
+	 *
+	 */
+
+	private static Activator sSingleton;
 
 
 	/**
