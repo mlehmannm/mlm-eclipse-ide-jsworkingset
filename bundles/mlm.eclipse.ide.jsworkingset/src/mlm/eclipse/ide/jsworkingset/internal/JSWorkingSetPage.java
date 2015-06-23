@@ -21,6 +21,7 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -38,19 +39,25 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorDescriptor;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.IWorkingSetManager;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.IWorkingSetPage;
 import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
 import org.eclipse.ui.dialogs.SelectionDialog;
+import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.ui.part.FileEditorInput;
 
 
 /**
@@ -250,8 +257,9 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 			mWorkingSetScript = WritableValue.withValueType(String.class);
 			mWorkingSetScript.setValue(workingSetScript);
 
-			final Label label = new Label(composite, SWT.WRAP);
-			label.setText("Script:");
+			final String linkText = String.format("<a href=\"native\">%s</a>", "Script:"); //$NON-NLS-1$
+			final Link link = new Link(composite, SWT.NONE);
+			link.setText(linkText);
 
 			final Text text = new Text(composite, SWT.BORDER | SWT.SINGLE);
 			text.setToolTipText("Enter a workspace file.");
@@ -259,6 +267,53 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 			        .align(SWT.FILL, SWT.CENTER) //
 			        .grab(true, false) //
 			        .create());
+
+			link.addListener(SWT.Selection, e -> {
+
+				final String filename = text.getText();
+				if (filename.isEmpty()) {
+
+					return;
+
+				}
+
+				final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+				final IResource resource = root.findMember(filename);
+				if (resource == null || !resource.isAccessible() || resource.getType() != IResource.FILE) {
+
+					return;
+
+				}
+
+				final IWorkbench workbench = PlatformUI.getWorkbench();
+				final IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
+				if (window == null) {
+
+					return;
+
+				}
+
+				final IWorkbenchPage page = window.getActivePage();
+				if (page == null) {
+
+					return;
+
+				}
+
+				try {
+
+					final FileEditorInput input = new FileEditorInput((IFile) resource);
+					final IEditorDescriptor editor = workbench.getEditorRegistry().getDefaultEditor(resource.getName());
+					final String editorId = editor != null ? editor.getId() : EditorsUI.DEFAULT_TEXT_EDITOR_ID;
+					page.openEditor(input, editorId);
+
+				} catch (final PartInitException ex) {
+
+					Activator.log(IStatus.ERROR, String.format("Failed to open editor for '%s'!", filename), ex); //$NON-NLS-1$
+
+				}
+
+			});
 
 			// TODO history or path completion for script?
 
@@ -268,35 +323,28 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 			        .align(SWT.FILL, SWT.CENTER) //
 			        .grab(false, false) //
 			        .create());
-			button.addSelectionListener(new SelectionAdapter() {
+			link.addListener(SWT.Selection, e -> {
 
+				final Shell shell = button.getShell();
+				final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+				final SelectionDialog dialog = new ResourceListSelectionDialog(shell, root, IResource.FILE);
+				dialog.setTitle("Select a JavaScript file");
+				if (dialog.open() == Window.OK) {
 
-				@Override
-				public void widgetSelected( final SelectionEvent pEvent ) {
+					final Object[] objects = dialog.getResult();
+					if (objects.length == 1) {
 
-					final Shell shell = button.getShell();
-					final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-					final SelectionDialog dialog = new ResourceListSelectionDialog(shell, root, IResource.FILE);
-					dialog.setTitle("Select a JavaScript file");
-					if (dialog.open() == Window.OK) {
+						final IResource resource = (IResource) objects[0];
+						final IPath path = resource.getFullPath();
+						text.setText(path.toString());
 
-						final Object[] objects = dialog.getResult();
-						if (objects.length == 1) {
+					} else {
 
-							final IResource resource = (IResource) objects[0];
-							final IPath path = resource.getFullPath();
-							text.setText(path.toString());
-
-						} else {
-
-							text.setText(""); //$NON-NLS-1$
-
-						}
+						text.setText(""); //$NON-NLS-1$
 
 					}
 
 				}
-
 
 			});
 
