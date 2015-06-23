@@ -77,12 +77,14 @@ public final class JSWorkingSetPrefs {
 
 	/**
 	 *
-	 * TODO
+	 * Checks if the given property is important. A property is important if it starts with certain prefixes.
 	 *
 	 * @param pProperty
-	 *            TODO
+	 *            the property to check
 	 *
 	 * @return the name or <code>null</code>
+	 *
+	 * @see #extractWorkingSetNameFromProperty(String)
 	 *
 	 * @since mlm.eclipse.ide.jsworkingset 1.0
 	 *
@@ -97,12 +99,15 @@ public final class JSWorkingSetPrefs {
 
 	/**
 	 *
-	 * TODO
+	 * Extracts the working set name from the given property. The name is part of the property, if the property starts with certain
+	 * prefixes.
 	 *
 	 * @param pProperty
-	 *            TODO
+	 *            the property to process
 	 *
 	 * @return the name or <code>null</code>
+	 *
+	 * @see #isImportantProperty(String)
 	 *
 	 * @since mlm.eclipse.ide.jsworkingset 1.0
 	 *
