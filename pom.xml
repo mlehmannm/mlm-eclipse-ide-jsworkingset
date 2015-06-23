@@ -40,7 +40,7 @@
 		<tycho.scmUrl>scm:git:https://github.com/mlehmannm/mlm-eclipse-ide-jsworkingset.git</tycho.scmUrl>
 		<!-- tycho version(s) -->
 		<tycho-version>0.23.0</tycho-version>
-		<tycho-extra-version>${tycho-version}</tycho-extra-version>
+		<tycho-extras-version>${tycho-version}</tycho-extras-version>
 	</properties>
 
 	<modules>
