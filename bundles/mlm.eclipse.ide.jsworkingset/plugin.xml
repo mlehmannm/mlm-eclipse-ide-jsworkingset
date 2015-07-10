@@ -93,9 +93,9 @@
             class="mlm.eclipse.ide.jsworkingset.internal.ImportWizard"
             icon="icons/full/obj16/workset.png"
             id="mlm.eclipse.ide.jsworkingset.ImportWizard"
-            name="%ImportWizard.name">
+            name="%importWizard.name">
          <description>
-            %ImportWizard.desc
+            %importWizard.desc
          </description>
          <selection
                class="org.eclipse.core.resources.IFile"
