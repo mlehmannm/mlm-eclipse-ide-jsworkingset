@@ -187,11 +187,11 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 
 			final UpdateValueStrategy targetToModel = new UpdateValueStrategy() //
 			        .setAfterConvertValidator(validator) //
-			;
+			        ;
 
 			final ISWTObservableValue target = WidgetProperties.text(SWT.Modify) //
 			        .observe(text) //
-			;
+			        ;
 
 			final Binding binding = mDataBindingContext.bindValue(target, mWorkingSetLabel, targetToModel, null);
 			binding.getValidationStatus().setValue(ValidationStatus.ok());
@@ -240,11 +240,11 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 
 			final UpdateValueStrategy targetToModel = new UpdateValueStrategy() //
 			        .setAfterConvertValidator(validator) //
-			;
+			        ;
 
 			final ISWTObservableValue target = WidgetProperties.text(SWT.Modify) //
 			        .observe(text) //
-			;
+			        ;
 
 			final Binding binding = mDataBindingContext.bindValue(target, mWorkingSetName, targetToModel, null);
 
@@ -323,7 +323,7 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 			        .align(SWT.FILL, SWT.CENTER) //
 			        .grab(false, false) //
 			        .create());
-			link.addListener(SWT.Selection, e -> {
+			button.addListener(SWT.Selection, e -> {
 
 				final Shell shell = button.getShell();
 				final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
@@ -378,11 +378,11 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 
 			final UpdateValueStrategy targetToModel = new UpdateValueStrategy() //
 			        .setAfterConvertValidator(validator) //
-			;
+			        ;
 
 			final ISWTObservableValue target = WidgetProperties.text(SWT.Modify) //
 			        .observe(text) //
-			;
+			        ;
 
 			final Binding binding = mDataBindingContext.bindValue(target, mWorkingSetScript, targetToModel, null);
 
@@ -437,8 +437,8 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 	public void finish() {
 
 		final String workingSetLabel = (String) mWorkingSetLabel.getValue();
-		final String workingSetName = (String) mWorkingSetName.getValue();
-		final String workingSetScript = (String) mWorkingSetScript.getValue();
+		final String workingSetName = ((String) mWorkingSetName.getValue()).trim();
+		final String workingSetScript = ((String) mWorkingSetScript.getValue()).trim();
 
 		if (mWorkingSet == null) {
 
@@ -448,10 +448,18 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 
 		}
 
-		mWorkingSet.setLabel(workingSetLabel);
+		if (!workingSetLabel.trim().isEmpty()) {
 
-		JSWorkingSetPrefs.setName(mWorkingSet, workingSetName.trim());
-		JSWorkingSetPrefs.setScript(mWorkingSet, workingSetScript.trim());
+			mWorkingSet.setLabel(workingSetLabel);
+
+		} else {
+
+			mWorkingSet.setLabel(workingSetName);
+
+		}
+
+		JSWorkingSetPrefs.setName(mWorkingSet, workingSetName);
+		JSWorkingSetPrefs.setScript(mWorkingSet, workingSetScript);
 
 	}
 
