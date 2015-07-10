@@ -138,7 +138,6 @@ public class ImportWorkingSetsHandler extends AbstractHandler {
 
 		}
 
-
 	}
 
 
