@@ -296,7 +296,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 		if (IWorkingSetManager.CHANGE_WORKING_SET_NAME_CHANGE.equals(pEvent.getProperty())) {
 
-			final IWorkingSet changedWS = (IWorkingSet) pEvent.getNewValue();
+			// final IWorkingSet changedWS = (IWorkingSet) pEvent.getNewValue();
 
 			// TODO
 			System.err.println(pEvent);
@@ -360,7 +360,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 					        .map(e -> e.getResource().getName()) //
 					        .sorted(Collator.getInstance()) //
 					        .collect(joining(", ")) //$NON-NLS-1$
-					;
+					        ;
 					final String message = String.format("Changes detected in projects '%s'.", projects); //$NON-NLS-1$
 					Activator.log(IStatus.INFO, message);
 
@@ -377,10 +377,9 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 				if (Activator.DEBUG) {
 
 					final long endTime = System.currentTimeMillis();
-
-					final long elapsed = endTime - startTime;
-
-					final String message = String.format("Working sets updated in %d ms.", elapsed); //$NON-NLS-1$
+					final Long elapsed = Long.valueOf(endTime - startTime);
+					final Integer noOfWorkingSets = Integer.valueOf(mWorkingSets.size());
+					final String message = String.format("%d working set(s) updated in %d ms.", noOfWorkingSets, elapsed); //$NON-NLS-1$
 					Activator.log(IStatus.INFO, message);
 
 				}
@@ -455,6 +454,12 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 	private void updateWorkingSetData( final WorkingSetData pWorkingSetData ) {
 
+		if (pWorkingSetData == null) {
+
+			return;
+
+		}
+
 		final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 
 		if (pWorkingSetData.scriptFile == null && pWorkingSetData.compiledScript == null) {
@@ -503,9 +508,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 				if (Activator.DEBUG) {
 
 					final long endTime = System.currentTimeMillis();
-
-					final long elapsed = endTime - startTime;
-
+					final Long elapsed = Long.valueOf(endTime - startTime);
 					final String message = String.format("Script '%s' compiled in %d ms.", scriptFile, elapsed); //$NON-NLS-1$
 					Activator.log(IStatus.INFO, message);
 
@@ -583,9 +586,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 				if (Activator.DEBUG) {
 
 					final long endTime = System.currentTimeMillis();
-
-					final long elapsed = endTime - startTime;
-
+					final Long elapsed = Long.valueOf(endTime - startTime);
 					final String label = pWorkingSetData.workingSet.getLabel();
 					final String message = String.format("Working set '%s' updated in %d ms.", label, elapsed); //$NON-NLS-1$
 					Activator.log(IStatus.INFO, message);
