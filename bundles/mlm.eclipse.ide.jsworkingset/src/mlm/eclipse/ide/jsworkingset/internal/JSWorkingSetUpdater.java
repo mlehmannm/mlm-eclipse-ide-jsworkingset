@@ -351,8 +351,9 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 		final IResourceDelta[] affectedChildren = delta.getAffectedChildren(kind, memberFlags);
 		if (affectedChildren != null && affectedChildren.length > 0) {
 
-			final int projectFlags = affectedChildren[0].getFlags();
-			if ((projectFlags & ~IResourceDelta.MARKERS) != IResourceDelta.NO_CHANGE) {
+			final int projectKind = affectedChildren[0].getKind() & ~IResourceDelta.CHANGED;
+			final int projectFlags = affectedChildren[0].getFlags() & ~IResourceDelta.MARKERS;
+			if (projectKind != 0 || projectFlags != 0) {
 
 				if (Activator.DEBUG) {
 
@@ -414,7 +415,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 						runAsUpdateJob(workingSetData, mResetWorkingSetData.andThen(mUpdateWorkingSetData));
 
-					} else if ((scriptFlags & ~IResourceDelta.MARKERS) != IResourceDelta.NO_CHANGE) {
+					} else if ((scriptFlags & ~IResourceDelta.MARKERS) != 0) {
 
 						if (Activator.DEBUG) {
 
