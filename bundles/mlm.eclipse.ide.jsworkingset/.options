@@ -2,3 +2,6 @@
 
 # Turn on general debugging for mlm.eclipse.ide.jsworkingset
 mlm.eclipse.ide.jsworkingset/debug=false
+
+# Turn on general debugging for mlm.eclipse.ide.jsworkingset
+mlm.eclipse.ide.jsworkingset/job/priority=SHORT

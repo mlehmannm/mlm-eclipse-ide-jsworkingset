@@ -22,7 +22,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.osgi.service.debug.DebugOptions;
 import org.eclipse.osgi.service.debug.DebugOptionsListener;
-import org.eclipse.osgi.service.debug.DebugTrace;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -78,11 +77,11 @@ public final class Activator extends AbstractUIPlugin implements DebugOptionsLis
 
 	/**
 	 *
-	 * Holds the trace.
+	 * Global debug flag.
 	 *
 	 */
 
-	public static DebugTrace sTrace;
+	public static boolean DEBUG = false;
 
 
 	/**
@@ -91,7 +90,7 @@ public final class Activator extends AbstractUIPlugin implements DebugOptionsLis
 	 *
 	 */
 
-	public static boolean DEBUG = false;
+	public static String JOB_PRIORITY = null;
 
 
 	/**
@@ -135,13 +134,8 @@ public final class Activator extends AbstractUIPlugin implements DebugOptionsLis
 	@Override
 	public void optionsChanged( final DebugOptions pOptions ) {
 
-		if (sTrace == null) {
-
-			sTrace = pOptions.newDebugTrace(ID_PLUGIN);
-
-		}
-
 		DEBUG = pOptions.getBooleanOption(ID_PLUGIN + "/debug", false); //$NON-NLS-1$
+		JOB_PRIORITY = pOptions.getOption(ID_PLUGIN + "/job/priority", null); //$NON-NLS-1$
 
 	}
 

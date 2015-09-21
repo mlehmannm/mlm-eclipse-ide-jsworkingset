@@ -24,6 +24,7 @@ import java.text.Collator;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
@@ -572,9 +573,12 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 	private void runAsUpdateJob( final WorkingSetData pWorkingSetData, final Consumer<WorkingSetData> pConsumer ) {
 
+		// TODO http://git.eclipse.org/c/egit/egit.git/commit/?id=76ab31f44a34a3f61f649bf61a3b114f590a2954
+		// Job vs. WorkspaceJob
+
 		final String workingSetName = JSWorkingSetPrefs.getName(pWorkingSetData.workingSet);
 		final String jobName = String.format("Updating working set '%s'.", workingSetName);
-		final WorkspaceJob updateJob = new WorkspaceJob(jobName) {
+		final Job updateJob = new WorkspaceJob(jobName) {
 
 
 			@Override
@@ -609,13 +613,43 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 		};
 		updateJob.setSystem(true);
-		updateJob.setPriority(Job.SHORT);
+		updateJob.setPriority(getJobPriority());
 		// TODO updateJob.setRule(ruleFactory.markerRule(pResource));
 		updateJob.schedule();
 
 		final String label = pWorkingSetData.workingSet.getLabel();
 		final String message = String.format("Job to update working set '%s' has been scheduled.", label); //$NON-NLS-1$
 		Activator.log(IStatus.INFO, message);
+
+	}
+
+
+	private int getJobPriority() {
+
+		String priority = Activator.JOB_PRIORITY;
+		if (priority != null) {
+
+			priority = priority.toUpperCase(Locale.ENGLISH);
+
+			switch (priority) {
+
+			case "SHORT": //$NON-NLS-1$
+				return Job.SHORT;
+
+			case "LONG": //$NON-NLS-1$
+				return Job.LONG;
+
+			case "BUILD": //$NON-NLS-1$
+				return Job.BUILD;
+
+			case "DECORATE": //$NON-NLS-1$
+				return Job.DECORATE;
+
+			}
+
+		}
+
+		return Job.SHORT;
 
 	}
 
