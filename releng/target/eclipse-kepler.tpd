@@ -1,4 +1,4 @@
-target "Eclipse-4.3 (Kepler)" with source configurePhase
+target "Eclipse-4.3.2 (Kepler)" with source configurePhase
 
 location eclipse-kepler-sr2 "http://download.eclipse.org/releases/kepler/201402280900/" {
 	

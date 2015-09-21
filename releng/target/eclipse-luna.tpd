@@ -1,4 +1,4 @@
-target "Eclipse-4.4 (Luna)" with source configurePhase
+target "Eclipse-4.4.2 (Luna)" with source configurePhase
 
 location eclipse-luna-sr2 "http://download.eclipse.org/releases/luna/201502271000/" {
 	

@@ -1,7 +1,6 @@
-target "Eclipse-4.5.1 (Mars)" with source configurePhase
+target "Eclipse-4.6 (Neon)" with source configurePhase
 
-// TODO location eclipse-mars-sr1 "http://download.eclipse.org/releases/mars/YYYYMMDD" {
-location eclipse-mars "http://download.eclipse.org/releases/mars" {
+location eclipse-neon "http://download.eclipse.org/releases/neon" {
 	
 	org.eclipse.sdk.ide lazy
 	org.eclipse.pde lazy
@@ -19,7 +18,7 @@ location eclipse-license "http://download.eclipse.org/cbi/updates/license" {
 	
 }
 
-location orbit-mars-sr1 "http://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository/" {
+location orbit-neon "http://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository/" {
 	
 	org.apache.log4j lazy
 	org.junit lazy
