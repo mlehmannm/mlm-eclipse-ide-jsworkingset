@@ -396,7 +396,8 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 					final long endTime = System.currentTimeMillis();
 					final Long elapsed = Long.valueOf(endTime - startTime);
 					final Integer noOfWorkingSets = Integer.valueOf(mWorkingSets.size());
-					final String message = String.format("%d working set(s) updated in %d ms.", noOfWorkingSets, elapsed); //$NON-NLS-1$
+					final String messageFmt = "%d working set(s) updated in %d ms."; //$NON-NLS-1$
+					final String message = String.format(messageFmt, noOfWorkingSets, elapsed);
 					Activator.log(IStatus.INFO, message);
 
 				}
@@ -422,7 +423,8 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 						if (Activator.DEBUG) {
 
-							final String message = String.format("Script moved from '%s' to '%s'.", oldScriptPath, newScriptPath); //$NON-NLS-1$
+							final String messageFmt = "Script moved from '%s' to '%s'."; //$NON-NLS-1$
+							final String message = String.format(messageFmt, oldScriptPath, newScriptPath);
 							Activator.log(IStatus.INFO, message);
 
 						}
@@ -435,7 +437,8 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 						if (Activator.DEBUG) {
 
-							final String message = String.format("Change detected in script '%s'.", scriptPath); //$NON-NLS-1$
+							final String messageFmt = "Change detected in script '%s'."; //$NON-NLS-1$
+							final String message = String.format(messageFmt, scriptPath); // $NON-NLS-1$
 							Activator.log(IStatus.INFO, message);
 
 						}
@@ -526,7 +529,8 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 					final long endTime = System.currentTimeMillis();
 					final Long elapsed = Long.valueOf(endTime - startTime);
-					final String message = String.format("Script '%s' compiled in %d ms.", scriptFile, elapsed); //$NON-NLS-1$
+					final String messageFmt = "Script '%s' compiled in %d ms."; //$NON-NLS-1$
+					final String message = String.format(messageFmt, scriptFile, elapsed);
 					Activator.log(IStatus.INFO, message);
 
 				}
@@ -614,8 +618,8 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 						if (Activator.DEBUG) {
 
-							final String message = String.format("Job to update %d working set(s) has been canceled!", //$NON-NLS-1$
-		                            noOfWorkingSets);
+							final String messageFmt = "Job to update %d working set(s) has been canceled!"; //$NON-NLS-1$
+							final String message = String.format(messageFmt, noOfWorkingSets);
 							Activator.log(IStatus.CANCEL, message);
 
 						}
@@ -633,7 +637,8 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 						final long endTime = System.currentTimeMillis();
 						final Long elapsed = Long.valueOf(endTime - startTime);
 						final String label = workingSetData.workingSet.getLabel();
-						final String message = String.format("Working set '%s' updated in %d ms.", label, elapsed); //$NON-NLS-1$
+						final String messageFmt = "Working set '%s' updated in %d ms."; //$NON-NLS-1$
+						final String message = String.format(messageFmt, label, elapsed); // $NON-NLS-1$
 						Activator.log(IStatus.INFO, message);
 
 					}
@@ -667,11 +672,12 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 		updateJob.setSystem(true);
 		updateJob.setPriority(getJobPriority());
 		// TODO updateJob.setRule(ruleFactory.markerRule(pResource));
-		updateJob.schedule();
+		updateJob.schedule(50);
 
 		if (Activator.DEBUG) {
 
-			final String message = String.format("Job to update %d working set(s) has been scheduled.", noOfWorkingSets); //$NON-NLS-1$
+			final String messageFmt = "Job to update %d working set(s) has been scheduled."; //$NON-NLS-1$
+			final String message = String.format(messageFmt, noOfWorkingSets);
 			Activator.log(IStatus.INFO, message);
 
 		}
@@ -688,7 +694,8 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 		Job.getJobManager().cancel(JOB_FAMILY);
 
 		final String workingSetName = JSWorkingSetPrefs.getName(pWorkingSetData.workingSet);
-		final String jobName = String.format("Updating working set '%s'.", workingSetName);
+		final String jobNameFmt = "Updating working set '%s'.";
+		final String jobName = String.format(jobNameFmt, workingSetName);
 		final Job updateJob = new WorkspaceJob(jobName) {
 
 
@@ -704,7 +711,8 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 					final long endTime = System.currentTimeMillis();
 					final Long elapsed = Long.valueOf(endTime - startTime);
 					final String label = pWorkingSetData.workingSet.getLabel();
-					final String message = String.format("Working set '%s' updated in %d ms.", label, elapsed); //$NON-NLS-1$
+					final String messageFmt = "Working set '%s' updated in %d ms."; //$NON-NLS-1$
+					final String message = String.format(messageFmt, label, elapsed); // $NON-NLS-1$
 					Activator.log(IStatus.INFO, message);
 
 				}
@@ -739,7 +747,8 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 		if (Activator.DEBUG) {
 
 			final String label = pWorkingSetData.workingSet.getLabel();
-			final String message = String.format("Job to update working set '%s' has been scheduled.", label); //$NON-NLS-1$
+			final String messageFmt = "Job to update working set '%s' has been scheduled."; //$NON-NLS-1$
+			final String message = String.format(messageFmt, label);
 			Activator.log(IStatus.INFO, message);
 
 		}
