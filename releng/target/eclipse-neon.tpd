@@ -1,7 +1,7 @@
 target "Eclipse-4.6 (Neon)" with source configurePhase
 
-location eclipse-neon "http://download.eclipse.org/releases/neon" {
-	
+location eclipse-neon "http://download.eclipse.org/releases/neon/" {
+
 	org.eclipse.sdk.ide lazy
 	org.eclipse.pde lazy
 	org.eclipse.emf.sdk.feature.group lazy
@@ -12,14 +12,14 @@ location eclipse-neon "http://download.eclipse.org/releases/neon" {
 
 }
 
-location eclipse-license "http://download.eclipse.org/cbi/updates/license" {
-	
+location eclipse-license "http://download.eclipse.org/cbi/updates/license/" {
+
 	org.eclipse.license.feature.group lazy
-	
+
 }
 
 location orbit-neon "http://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository/" {
-	
+
 	org.apache.log4j lazy
 	org.junit lazy
 	org.hamcrest lazy
@@ -29,22 +29,21 @@ location orbit-neon "http://download.eclipse.org/tools/orbit/downloads/drops/R20
 	org.hamcrest.library lazy
 	org.mockito lazy
 	org.objenesis lazy
-	
+
 }
 
-location swtbot-2.2.1 "http://download.eclipse.org/technology/swtbot/releases/2.2.1" {
-	
+location swtbot-latest "http://download.eclipse.org/technology/swtbot/releases/latest/" {
+
 	org.eclipse.swtbot.eclipse.feature.group lazy
 	org.eclipse.swtbot.feature.group lazy
 	org.eclipse.swtbot.eclipse.test.junit.feature.group lazy
-	
+
 }
 
-// TODO location subclipse-1.12.x "http://subclipse.tigris.org/update_1.12.x" {
-location subclipse-1.10.x "http://subclipse.tigris.org/update_1.10.x" {
+location subclipse-1.12.x "http://subclipse.tigris.org/update_1.12.x/" {
 
 	org.tigris.subversion.subclipse.feature.group lazy
 	org.tigris.subversion.clientadapter.feature.feature.group lazy
 	org.tigris.subversion.clientadapter.javahl.feature.feature.group lazy
-	
+
 }

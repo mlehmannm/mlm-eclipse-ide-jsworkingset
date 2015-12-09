@@ -1,8 +1,7 @@
 target "Eclipse-4.5.1 (Mars)" with source configurePhase
 
-// TODO location eclipse-mars-sr1 "http://download.eclipse.org/releases/mars/YYYYMMDD" {
-location eclipse-mars "http://download.eclipse.org/releases/mars" {
-	
+location eclipse-mars-sr1 "http://download.eclipse.org/releases/mars/201510021000" {
+
 	org.eclipse.sdk.ide lazy
 	org.eclipse.pde lazy
 	org.eclipse.emf.sdk.feature.group lazy
@@ -13,14 +12,14 @@ location eclipse-mars "http://download.eclipse.org/releases/mars" {
 
 }
 
-location eclipse-license "http://download.eclipse.org/cbi/updates/license" {
-	
+location eclipse-license "http://download.eclipse.org/cbi/updates/license/" {
+
 	org.eclipse.license.feature.group lazy
-	
+
 }
 
 location orbit-mars-sr1 "http://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository/" {
-	
+
 	org.apache.log4j lazy
 	org.junit lazy
 	org.hamcrest lazy
@@ -30,22 +29,21 @@ location orbit-mars-sr1 "http://download.eclipse.org/tools/orbit/downloads/drops
 	org.hamcrest.library lazy
 	org.mockito lazy
 	org.objenesis lazy
-	
+
 }
 
-location swtbot-2.2.1 "http://download.eclipse.org/technology/swtbot/releases/2.2.1" {
-	
+location swtbot-latest "http://download.eclipse.org/technology/swtbot/releases/latest/" {
+
 	org.eclipse.swtbot.eclipse.feature.group lazy
 	org.eclipse.swtbot.feature.group lazy
 	org.eclipse.swtbot.eclipse.test.junit.feature.group lazy
-	
+
 }
 
-// TODO location subclipse-1.12.x "http://subclipse.tigris.org/update_1.12.x" {
-location subclipse-1.10.x "http://subclipse.tigris.org/update_1.10.x" {
+location subclipse-1.12.x "http://subclipse.tigris.org/update_1.12.x/" {
 
 	org.tigris.subversion.subclipse.feature.group lazy
 	org.tigris.subversion.clientadapter.feature.feature.group lazy
 	org.tigris.subversion.clientadapter.javahl.feature.feature.group lazy
-	
+
 }
