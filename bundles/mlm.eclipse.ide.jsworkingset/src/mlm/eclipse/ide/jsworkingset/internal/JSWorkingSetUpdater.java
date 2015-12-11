@@ -48,7 +48,6 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IAdaptable;
@@ -364,7 +363,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 		}
 
-		// check for updates to projects
+		// check for updates to projects (not resources)
 		final IResourceDelta delta = pEvent.getDelta();
 		final int kind = IResourceDelta.ADDED | IResourceDelta.CHANGED | IResourceDelta.REMOVED;
 		final int memberFlags = IResource.PROJECT;
@@ -382,7 +381,8 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 					        .sorted(Collator.getInstance()) //
 					        .collect(joining(", ")) //$NON-NLS-1$
 					        ;
-					final String message = String.format("Changes detected in projects '%s'.", projects); //$NON-NLS-1$
+					final String messageFmt = "Changes detected in %d projects ('%s')."; //$NON-NLS-1$
+					final String message = String.format(messageFmt, Integer.valueOf(affectedChildren.length), projects);
 					Activator.log(IStatus.INFO, message);
 
 				}
@@ -601,14 +601,30 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 		// setup and schedule new job
 		final Integer noOfWorkingSets = Integer.valueOf(pWorkingSetData.size());
 		final String jobName = String.format("Updating %d working set(s).", noOfWorkingSets);
-		final Job updateJob = new WorkspaceJob(jobName) {
+		final Job updateJob = new Job(jobName) {
 
 
 			private volatile boolean mCanceled = false;
 
 
 			@Override
-			public IStatus runInWorkspace( final IProgressMonitor pMonitor ) throws CoreException {
+			public boolean belongsTo( final Object pFamily ) {
+
+				return JOB_FAMILY.equals(pFamily);
+
+			}
+
+
+			@Override
+			protected void canceling() {
+
+				mCanceled = true;
+
+			}
+
+
+			@Override
+			protected IStatus run( final IProgressMonitor pMonitor ) {
 
 				final SubMonitor monitor = SubMonitor.convert(pMonitor, pWorkingSetData.size());
 
@@ -652,26 +668,10 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 			}
 
 
-			@Override
-			protected void canceling() {
-
-				mCanceled = true;
-
-			}
-
-
-			@Override
-			public boolean belongsTo( final Object pFamily ) {
-
-				return JOB_FAMILY.equals(pFamily);
-
-			}
-
-
 		};
-		updateJob.setSystem(true);
 		updateJob.setPriority(getJobPriority());
-		// TODO updateJob.setRule(ruleFactory.markerRule(pResource));
+		updateJob.setSystem(true);
+		updateJob.setUser(false);
 		updateJob.schedule(50);
 
 		if (Activator.DEBUG) {
@@ -696,11 +696,19 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 		final String workingSetName = JSWorkingSetPrefs.getName(pWorkingSetData.workingSet);
 		final String jobNameFmt = "Updating working set '%s'.";
 		final String jobName = String.format(jobNameFmt, workingSetName);
-		final Job updateJob = new WorkspaceJob(jobName) {
+		final Job updateJob = new Job(jobName) {
 
 
 			@Override
-			public IStatus runInWorkspace( final IProgressMonitor pMonitor ) throws CoreException {
+			public boolean belongsTo( final Object pFamily ) {
+
+				return JOB_FAMILY.equals(pFamily);
+
+			}
+
+
+			@Override
+			protected IStatus run( final IProgressMonitor pMonitor ) {
 
 				final long startTime = System.currentTimeMillis();
 
@@ -723,14 +731,6 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 
 			@Override
-			public boolean belongsTo( final Object pFamily ) {
-
-				return JOB_FAMILY.equals(pFamily);
-
-			}
-
-
-			@Override
 			public String toString() {
 
 				return JSWorkingSetUpdater.class.getSimpleName() + '[' + workingSetName + ']';
@@ -739,10 +739,10 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 
 		};
-		updateJob.setSystem(true);
 		updateJob.setPriority(getJobPriority());
-		// TODO updateJob.setRule(ruleFactory.markerRule(pResource));
-		updateJob.schedule();
+		updateJob.setSystem(true);
+		updateJob.setUser(false);
+		updateJob.schedule(50);
 
 		if (Activator.DEBUG) {
 
