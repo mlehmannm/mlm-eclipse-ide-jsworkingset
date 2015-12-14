@@ -595,8 +595,14 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 		// TODO http://git.eclipse.org/c/egit/egit.git/commit/?id=76ab31f44a34a3f61f649bf61a3b114f590a2954
 		// Job vs. WorkspaceJob
 
-		// always cancel old jobs before scheduling new ones
-		Job.getJobManager().cancel(JOB_FAMILY);
+		// always cancel jobs before scheduling new ones, if any
+		final IJobManager jobManager = Job.getJobManager();
+		final int noOfJobs = jobManager.find(JOB_FAMILY).length;
+		if (noOfJobs > 0) {
+
+			jobManager.cancel(JOB_FAMILY);
+
+		}
 
 		// setup and schedule new job
 		final Integer noOfWorkingSets = Integer.valueOf(pWorkingSetData.size());
@@ -634,9 +640,9 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 						if (Activator.DEBUG) {
 
-							final String messageFmt = "Job to update %d working set(s) has been canceled!"; //$NON-NLS-1$
+							final String messageFmt = "Job to update %d working set(s) has been cancelled!"; //$NON-NLS-1$
 							final String message = String.format(messageFmt, noOfWorkingSets);
-							Activator.log(IStatus.CANCEL, message);
+							Activator.log(IStatus.INFO, message);
 
 						}
 
@@ -672,13 +678,23 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 		updateJob.setPriority(getJobPriority());
 		updateJob.setSystem(true);
 		updateJob.setUser(false);
-		updateJob.schedule(50);
+		updateJob.schedule(getJobDelay());
 
 		if (Activator.DEBUG) {
 
-			final String messageFmt = "Job to update %d working set(s) has been scheduled."; //$NON-NLS-1$
-			final String message = String.format(messageFmt, noOfWorkingSets);
-			Activator.log(IStatus.INFO, message);
+			if (noOfJobs <= 0) {
+
+				final String messageFmt = "Job to update %d working set(s) has been scheduled."; //$NON-NLS-1$
+				final String message = String.format(messageFmt, noOfWorkingSets);
+				Activator.log(IStatus.INFO, message);
+
+			} else {
+
+				final String messageFmt = "Job to update %d working set(s) has been rescheduled."; //$NON-NLS-1$
+				final String message = String.format(messageFmt, noOfWorkingSets);
+				Activator.log(IStatus.INFO, message);
+
+			}
 
 		}
 
@@ -690,8 +706,14 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 		// TODO http://git.eclipse.org/c/egit/egit.git/commit/?id=76ab31f44a34a3f61f649bf61a3b114f590a2954
 		// Job vs. WorkspaceJob
 
-		// always cancel jobs before scheduling new ones
-		Job.getJobManager().cancel(JOB_FAMILY);
+		// always cancel jobs before scheduling new ones, if any
+		final IJobManager jobManager = Job.getJobManager();
+		final int noOfJobs = jobManager.find(JOB_FAMILY).length;
+		if (noOfJobs > 0) {
+
+			jobManager.cancel(JOB_FAMILY);
+
+		}
 
 		final String workingSetName = JSWorkingSetPrefs.getName(pWorkingSetData.workingSet);
 		final String jobNameFmt = "Updating working set '%s'.";
@@ -742,16 +764,41 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 		updateJob.setPriority(getJobPriority());
 		updateJob.setSystem(true);
 		updateJob.setUser(false);
-		updateJob.schedule(50);
+		updateJob.schedule(getJobDelay());
 
 		if (Activator.DEBUG) {
 
-			final String label = pWorkingSetData.workingSet.getLabel();
-			final String messageFmt = "Job to update working set '%s' has been scheduled."; //$NON-NLS-1$
-			final String message = String.format(messageFmt, label);
-			Activator.log(IStatus.INFO, message);
+			if (noOfJobs <= 0) {
+
+				final String label = pWorkingSetData.workingSet.getLabel();
+				final String messageFmt = "Job to update working set '%s' has been scheduled."; //$NON-NLS-1$
+				final String message = String.format(messageFmt, label);
+				Activator.log(IStatus.INFO, message);
+
+			} else {
+
+				final String label = pWorkingSetData.workingSet.getLabel();
+				final String messageFmt = "Job to update working set '%s' has been rescheduled."; //$NON-NLS-1$
+				final String message = String.format(messageFmt, label);
+				Activator.log(IStatus.INFO, message);
+
+			}
 
 		}
+
+	}
+
+
+	private int getJobDelay() {
+
+		final int delay = Activator.JOB_DELAY;
+		if (delay > 0) {
+
+			return delay;
+
+		}
+
+		return 2000;
 
 	}
 
