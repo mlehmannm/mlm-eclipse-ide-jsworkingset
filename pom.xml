@@ -39,7 +39,7 @@
 		<!-- ??? -->
 		<tycho.scmUrl>scm:git:https://github.com/mlehmannm/mlm-eclipse-ide-jsworkingset.git</tycho.scmUrl>
 		<!-- tycho version(s) -->
-		<tycho-version>0.23.0</tycho-version>
+		<tycho-version>0.24.0</tycho-version>
 		<tycho-extras-version>${tycho-version}</tycho-extras-version>
 	</properties>
 
@@ -47,11 +47,11 @@
 		<!-- target -->
 		<module>releng/target</module>
 		<!-- feature(s) -->
-		<module>features/mlm.eclipse.ide.jsworkingset.feature</module>
+		<module>features</module>
 		<!-- bundle(s) -->
-		<module>bundles/mlm.eclipse.ide.jsworkingset</module>
+		<module>bundles</module>
 		<!-- test(s) -->
-		<module>tests/mlm.eclipse.ide.jsworkingset.tests</module>
+		<module>tests</module>
 		<!-- repository -->
 		<module>releng/repository</module>
 	</modules>

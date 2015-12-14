@@ -3,3 +3,4 @@
 
 # maven
 /target
+/.polyglot.build.properties

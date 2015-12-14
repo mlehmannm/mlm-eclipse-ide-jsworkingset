@@ -16,9 +16,9 @@
 
 	<parent>
 		<groupId>mlm.eclipse.ide.jsworkingset</groupId>
-		<artifactId>jsworkingset-parent</artifactId>
+		<artifactId>jsworkingset-tests</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
-		<relativePath>../..</relativePath>
+		<relativePath>..</relativePath>
 	</parent>
 
 	<artifactId>mlm.eclipse.ide.jsworkingset.tests</artifactId>
