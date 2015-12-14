@@ -90,6 +90,15 @@ public final class Activator extends AbstractUIPlugin implements DebugOptionsLis
 	 *
 	 */
 
+	public static int JOB_DELAY = -1;
+
+
+	/**
+	 *
+	 * Global debug flag.
+	 *
+	 */
+
 	public static String JOB_PRIORITY = null;
 
 
@@ -135,6 +144,7 @@ public final class Activator extends AbstractUIPlugin implements DebugOptionsLis
 	public void optionsChanged( final DebugOptions pOptions ) {
 
 		DEBUG = pOptions.getBooleanOption(ID_PLUGIN + "/debug", false); //$NON-NLS-1$
+		JOB_DELAY = pOptions.getIntegerOption(ID_PLUGIN + "/job/delay", -1); //$NON-NLS-1$
 		JOB_PRIORITY = pOptions.getOption(ID_PLUGIN + "/job/priority", null); //$NON-NLS-1$
 
 	}
