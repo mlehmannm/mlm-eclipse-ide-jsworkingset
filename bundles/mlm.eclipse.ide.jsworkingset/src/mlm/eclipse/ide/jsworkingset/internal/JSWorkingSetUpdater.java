@@ -21,9 +21,12 @@ import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.Collator;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
@@ -45,7 +48,6 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IAdaptable;
@@ -54,6 +56,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -75,6 +79,17 @@ import org.osgi.framework.Bundle;
  */
 
 public class JSWorkingSetUpdater implements IWorkingSetUpdater {
+
+
+	/**
+	 *
+	 * The object to address all updates jobs.
+	 *
+	 * @see IJobManager#cancel(Object)
+	 *
+	 */
+
+	private final static Object JOB_FAMILY = new Object();
 
 
 	/**
@@ -296,10 +311,14 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 		if (IWorkingSetManager.CHANGE_WORKING_SET_NAME_CHANGE.equals(pEvent.getProperty())) {
 
-			final IWorkingSet changedWS = (IWorkingSet) pEvent.getNewValue();
+			// final IWorkingSet changedWS = (IWorkingSet) pEvent.getNewValue();
 
-			// TODO
-			System.err.println(pEvent);
+			if (Activator.DEBUG) {
+
+				// TODO
+				System.err.println(pEvent);
+
+			}
 
 		}
 
@@ -344,15 +363,16 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 		}
 
-		// check for updates to projects
+		// check for updates to projects (not resources)
 		final IResourceDelta delta = pEvent.getDelta();
 		final int kind = IResourceDelta.ADDED | IResourceDelta.CHANGED | IResourceDelta.REMOVED;
 		final int memberFlags = IResource.PROJECT;
 		final IResourceDelta[] affectedChildren = delta.getAffectedChildren(kind, memberFlags);
 		if (affectedChildren != null && affectedChildren.length > 0) {
 
-			final int projectFlags = affectedChildren[0].getFlags();
-			if ((projectFlags & ~IResourceDelta.MARKERS) != IResourceDelta.NO_CHANGE) {
+			final int projectKind = affectedChildren[0].getKind() & ~IResourceDelta.CHANGED;
+			final int projectFlags = affectedChildren[0].getFlags() & ~IResourceDelta.MARKERS;
+			if (projectKind != 0 || projectFlags != 0) {
 
 				if (Activator.DEBUG) {
 
@@ -360,27 +380,24 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 					        .map(e -> e.getResource().getName()) //
 					        .sorted(Collator.getInstance()) //
 					        .collect(joining(", ")) //$NON-NLS-1$
-					;
-					final String message = String.format("Changes detected in projects '%s'.", projects); //$NON-NLS-1$
+					        ;
+					final String messageFmt = "Changes detected in %d projects ('%s')."; //$NON-NLS-1$
+					final String message = String.format(messageFmt, Integer.valueOf(affectedChildren.length), projects);
 					Activator.log(IStatus.INFO, message);
 
 				}
 
 				final long startTime = System.currentTimeMillis();
 
-				for (final WorkingSetData workingSetData : mWorkingSets.values()) {
-
-					runAsUpdateJob(workingSetData, mUpdateWorkingSetData);
-
-				}
+				runAsUpdateJob(new ArrayList<>(mWorkingSets.values()), mUpdateWorkingSetData);
 
 				if (Activator.DEBUG) {
 
 					final long endTime = System.currentTimeMillis();
-
-					final long elapsed = endTime - startTime;
-
-					final String message = String.format("Working sets updated in %d ms.", elapsed); //$NON-NLS-1$
+					final Long elapsed = Long.valueOf(endTime - startTime);
+					final Integer noOfWorkingSets = Integer.valueOf(mWorkingSets.size());
+					final String messageFmt = "%d working set(s) updated in %d ms."; //$NON-NLS-1$
+					final String message = String.format(messageFmt, noOfWorkingSets, elapsed);
 					Activator.log(IStatus.INFO, message);
 
 				}
@@ -406,7 +423,8 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 						if (Activator.DEBUG) {
 
-							final String message = String.format("Script moved from '%s' to '%s'.", oldScriptPath, newScriptPath); //$NON-NLS-1$
+							final String messageFmt = "Script moved from '%s' to '%s'."; //$NON-NLS-1$
+							final String message = String.format(messageFmt, oldScriptPath, newScriptPath);
 							Activator.log(IStatus.INFO, message);
 
 						}
@@ -415,11 +433,12 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 						runAsUpdateJob(workingSetData, mResetWorkingSetData.andThen(mUpdateWorkingSetData));
 
-					} else if ((scriptFlags & ~IResourceDelta.MARKERS) != IResourceDelta.NO_CHANGE) {
+					} else if ((scriptFlags & ~IResourceDelta.MARKERS) != 0) {
 
 						if (Activator.DEBUG) {
 
-							final String message = String.format("Change detected in script '%s'.", scriptPath); //$NON-NLS-1$
+							final String messageFmt = "Change detected in script '%s'."; //$NON-NLS-1$
+							final String message = String.format(messageFmt, scriptPath); // $NON-NLS-1$
 							Activator.log(IStatus.INFO, message);
 
 						}
@@ -454,6 +473,12 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 
 	private void updateWorkingSetData( final WorkingSetData pWorkingSetData ) {
+
+		if (pWorkingSetData == null) {
+
+			return;
+
+		}
 
 		final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 
@@ -503,10 +528,9 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 				if (Activator.DEBUG) {
 
 					final long endTime = System.currentTimeMillis();
-
-					final long elapsed = endTime - startTime;
-
-					final String message = String.format("Script '%s' compiled in %d ms.", scriptFile, elapsed); //$NON-NLS-1$
+					final Long elapsed = Long.valueOf(endTime - startTime);
+					final String messageFmt = "Script '%s' compiled in %d ms."; //$NON-NLS-1$
+					final String message = String.format(messageFmt, scriptFile, elapsed);
 					Activator.log(IStatus.INFO, message);
 
 				}
@@ -566,15 +590,125 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 	}
 
 
-	private void runAsUpdateJob( final WorkingSetData pWorkingSetData, final Consumer<WorkingSetData> pConsumer ) {
+	private void runAsUpdateJob( final List<WorkingSetData> pWorkingSetData, final Consumer<WorkingSetData> pConsumer ) {
 
-		final String workingSetName = JSWorkingSetPrefs.getName(pWorkingSetData.workingSet);
-		final String jobName = String.format("Updating working set '%s'.", workingSetName);
-		final WorkspaceJob updateJob = new WorkspaceJob(jobName) {
+		// TODO http://git.eclipse.org/c/egit/egit.git/commit/?id=76ab31f44a34a3f61f649bf61a3b114f590a2954
+		// Job vs. WorkspaceJob
+
+		// always cancel old jobs before scheduling new ones
+		Job.getJobManager().cancel(JOB_FAMILY);
+
+		// setup and schedule new job
+		final Integer noOfWorkingSets = Integer.valueOf(pWorkingSetData.size());
+		final String jobName = String.format("Updating %d working set(s).", noOfWorkingSets);
+		final Job updateJob = new Job(jobName) {
+
+
+			private volatile boolean mCanceled = false;
 
 
 			@Override
-			public IStatus runInWorkspace( final IProgressMonitor pMonitor ) throws CoreException {
+			public boolean belongsTo( final Object pFamily ) {
+
+				return JOB_FAMILY.equals(pFamily);
+
+			}
+
+
+			@Override
+			protected void canceling() {
+
+				mCanceled = true;
+
+			}
+
+
+			@Override
+			protected IStatus run( final IProgressMonitor pMonitor ) {
+
+				final SubMonitor monitor = SubMonitor.convert(pMonitor, pWorkingSetData.size());
+
+				for (final WorkingSetData workingSetData : pWorkingSetData) {
+
+					if (mCanceled || monitor.isCanceled()) {
+
+						if (Activator.DEBUG) {
+
+							final String messageFmt = "Job to update %d working set(s) has been canceled!"; //$NON-NLS-1$
+							final String message = String.format(messageFmt, noOfWorkingSets);
+							Activator.log(IStatus.CANCEL, message);
+
+						}
+
+						return Status.CANCEL_STATUS;
+
+					}
+
+					final long startTime = System.currentTimeMillis();
+
+					pConsumer.accept(workingSetData);
+
+					if (Activator.DEBUG) {
+
+						final long endTime = System.currentTimeMillis();
+						final Long elapsed = Long.valueOf(endTime - startTime);
+						final String label = workingSetData.workingSet.getLabel();
+						final String messageFmt = "Working set '%s' updated in %d ms."; //$NON-NLS-1$
+						final String message = String.format(messageFmt, label, elapsed); // $NON-NLS-1$
+						Activator.log(IStatus.INFO, message);
+
+					}
+
+					pMonitor.worked(1);
+
+				}
+
+				return Status.OK_STATUS;
+
+			}
+
+
+		};
+		updateJob.setPriority(getJobPriority());
+		updateJob.setSystem(true);
+		updateJob.setUser(false);
+		updateJob.schedule(50);
+
+		if (Activator.DEBUG) {
+
+			final String messageFmt = "Job to update %d working set(s) has been scheduled."; //$NON-NLS-1$
+			final String message = String.format(messageFmt, noOfWorkingSets);
+			Activator.log(IStatus.INFO, message);
+
+		}
+
+	}
+
+
+	private void runAsUpdateJob( final WorkingSetData pWorkingSetData, final Consumer<WorkingSetData> pConsumer ) {
+
+		// TODO http://git.eclipse.org/c/egit/egit.git/commit/?id=76ab31f44a34a3f61f649bf61a3b114f590a2954
+		// Job vs. WorkspaceJob
+
+		// always cancel jobs before scheduling new ones
+		Job.getJobManager().cancel(JOB_FAMILY);
+
+		final String workingSetName = JSWorkingSetPrefs.getName(pWorkingSetData.workingSet);
+		final String jobNameFmt = "Updating working set '%s'.";
+		final String jobName = String.format(jobNameFmt, workingSetName);
+		final Job updateJob = new Job(jobName) {
+
+
+			@Override
+			public boolean belongsTo( final Object pFamily ) {
+
+				return JOB_FAMILY.equals(pFamily);
+
+			}
+
+
+			@Override
+			protected IStatus run( final IProgressMonitor pMonitor ) {
 
 				final long startTime = System.currentTimeMillis();
 
@@ -583,11 +717,10 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 				if (Activator.DEBUG) {
 
 					final long endTime = System.currentTimeMillis();
-
-					final long elapsed = endTime - startTime;
-
+					final Long elapsed = Long.valueOf(endTime - startTime);
 					final String label = pWorkingSetData.workingSet.getLabel();
-					final String message = String.format("Working set '%s' updated in %d ms.", label, elapsed); //$NON-NLS-1$
+					final String messageFmt = "Working set '%s' updated in %d ms."; //$NON-NLS-1$
+					final String message = String.format(messageFmt, label, elapsed); // $NON-NLS-1$
 					Activator.log(IStatus.INFO, message);
 
 				}
@@ -606,14 +739,49 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 
 		};
+		updateJob.setPriority(getJobPriority());
 		updateJob.setSystem(true);
-		updateJob.setPriority(Job.SHORT);
-		// TODO updateJob.setRule(ruleFactory.markerRule(pResource));
-		updateJob.schedule();
+		updateJob.setUser(false);
+		updateJob.schedule(50);
 
-		final String label = pWorkingSetData.workingSet.getLabel();
-		final String message = String.format("Job to update working set '%s' has been scheduled.", label); //$NON-NLS-1$
-		Activator.log(IStatus.INFO, message);
+		if (Activator.DEBUG) {
+
+			final String label = pWorkingSetData.workingSet.getLabel();
+			final String messageFmt = "Job to update working set '%s' has been scheduled."; //$NON-NLS-1$
+			final String message = String.format(messageFmt, label);
+			Activator.log(IStatus.INFO, message);
+
+		}
+
+	}
+
+
+	private int getJobPriority() {
+
+		String priority = Activator.JOB_PRIORITY;
+		if (priority != null) {
+
+			priority = priority.toUpperCase(Locale.ENGLISH);
+
+			switch (priority) {
+
+			case "SHORT": //$NON-NLS-1$
+				return Job.SHORT;
+
+			case "LONG": //$NON-NLS-1$
+				return Job.LONG;
+
+			case "BUILD": //$NON-NLS-1$
+				return Job.BUILD;
+
+			case "DECORATE": //$NON-NLS-1$
+				return Job.DECORATE;
+
+			}
+
+		}
+
+		return Job.SHORT;
 
 	}
 
