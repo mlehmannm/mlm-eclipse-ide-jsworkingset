@@ -1,5 +1,5 @@
 /****************************************************************************************
- * Copyright (c) 2015 Marco Lehmann-Mörz.
+ * Copyright (c) 2015-2016 Marco Lehmann-Mörz.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -137,18 +137,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 	 *
 	 */
 
-	private final IResourceChangeListener mResourceChangeListener = new IResourceChangeListener() {
-
-
-		@Override
-		public void resourceChanged( final IResourceChangeEvent pEvent ) {
-
-			handleResourceChanged(pEvent);
-
-		}
-
-
-	};
+	private final IResourceChangeListener mResourceChangeListener = e -> handleResourceChanged(e);
 
 
 	/**
@@ -157,18 +146,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 	 *
 	 */
 
-	private final IPropertyChangeListener mPreferenceStorePropertyChangeListener = new IPropertyChangeListener() {
-
-
-		@Override
-		public void propertyChange( final PropertyChangeEvent pEvent ) {
-
-			handlePreferenceStorePropertyChange(pEvent);
-
-		}
-
-
-	};
+	private final IPropertyChangeListener mPreferenceStorePropertyChangeListener = e -> handlePreferenceStorePropertyChange(e);
 
 
 	/**
@@ -177,18 +155,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 	 *
 	 */
 
-	private final IPropertyChangeListener mWorkingSetManagerPropertyChangeListener = new IPropertyChangeListener() {
-
-
-		@Override
-		public void propertyChange( final PropertyChangeEvent pEvent ) {
-
-			handleWorkingSetManagerPropertyChange(pEvent);
-
-		}
-
-
-	};
+	private final IPropertyChangeListener mWorkingSetManagerPropertyChangeListener = e -> handleWorkingSetManagerPropertyChange(e);
 
 
 	/**
@@ -356,6 +323,12 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 
 	private void handleResourceChanged( final IResourceChangeEvent pEvent ) {
+
+		if (Activator.DISABLE) {
+
+			return;
+
+		}
 
 		if (mWorkingSets.isEmpty()) {
 

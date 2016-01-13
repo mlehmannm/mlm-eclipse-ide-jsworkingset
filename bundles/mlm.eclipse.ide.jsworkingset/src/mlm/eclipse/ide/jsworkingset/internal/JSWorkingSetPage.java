@@ -1,5 +1,5 @@
 /****************************************************************************************
- * Copyright (c) 2015 Marco Lehmann-Mörz.
+ * Copyright (c) 2015-2016 Marco Lehmann-Mörz.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -164,24 +164,17 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 			        .span(2, 1) //
 			        .create());
 
-			final IValidator validator = new IValidator() {
+			final IValidator validator = v -> {
 
+				final String value = (String) v;
 
-				@Override
-				public IStatus validate( final Object pValue ) {
+				if (value == null || value.trim().isEmpty()) {
 
-					final String value = (String) pValue;
-
-					if (value == null || value.trim().isEmpty()) {
-
-						return ValidationStatus.ok();
-
-					}
-
-					return ValidationStatus.info("This may likely be overridden by the script.");
+					return ValidationStatus.ok();
 
 				}
 
+				return ValidationStatus.info("This may likely be overridden by the script.");
 
 			};
 
@@ -217,24 +210,17 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 			        .create());
 			text.setFocus();
 
-			final IValidator validator = new IValidator() {
+			final IValidator validator = v -> {
 
+				final String value = (String) v;
 
-				@Override
-				public IStatus validate( final Object pValue ) {
+				if (value == null || value.trim().isEmpty()) {
 
-					final String value = (String) pValue;
-
-					if (value == null || value.trim().isEmpty()) {
-
-						return ValidationStatus.error("Please provide a name!");
-
-					}
-
-					return ValidationStatus.ok();
+					return ValidationStatus.error("Please provide a name!");
 
 				}
 
+				return ValidationStatus.ok();
 
 			};
 
@@ -348,31 +334,23 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 
 			});
 
-			final IValidator validator = new IValidator() {
+			final IValidator validator = v -> {
 
+				final String value = (String) v;
+				if (value == null || value.trim().isEmpty()) {
 
-				@Override
-				public IStatus validate( final Object pValue ) {
-
-					final String value = (String) pValue;
-
-					if (value == null || value.trim().isEmpty()) {
-
-						return ValidationStatus.error("Please provide a script!");
-
-					}
-
-					final IResource member = ResourcesPlugin.getWorkspace().getRoot().findMember(value);
-					if (member == null || !member.exists()) {
-
-						return ValidationStatus.error("The provided script does not exist in the workspace!");
-
-					}
-
-					return ValidationStatus.ok();
+					return ValidationStatus.error("Please provide a script!");
 
 				}
 
+				final IResource member = ResourcesPlugin.getWorkspace().getRoot().findMember(value);
+				if (member == null || !member.exists()) {
+
+					return ValidationStatus.error("The provided script does not exist in the workspace!");
+
+				}
+
+				return ValidationStatus.ok();
 
 			};
 
