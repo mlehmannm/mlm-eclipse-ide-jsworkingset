@@ -164,7 +164,7 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 			        .span(2, 1) //
 			        .create());
 
-			final IValidator validator = v -> {
+			final IValidator validator = ( v ) -> {
 
 				final String value = (String) v;
 
@@ -210,7 +210,7 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 			        .create());
 			text.setFocus();
 
-			final IValidator validator = v -> {
+			final IValidator validator = ( v ) -> {
 
 				final String value = (String) v;
 
@@ -254,7 +254,7 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 			        .grab(true, false) //
 			        .create());
 
-			link.addListener(SWT.Selection, e -> {
+			link.addListener(SWT.Selection, ( e ) -> {
 
 				final String filename = text.getText();
 				if (filename.isEmpty()) {
@@ -309,7 +309,7 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 			        .align(SWT.FILL, SWT.CENTER) //
 			        .grab(false, false) //
 			        .create());
-			button.addListener(SWT.Selection, e -> {
+			button.addListener(SWT.Selection, ( e ) -> {
 
 				final Shell shell = button.getShell();
 				final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
@@ -334,7 +334,7 @@ public class JSWorkingSetPage extends WizardPage implements IWorkingSetPage {
 
 			});
 
-			final IValidator validator = v -> {
+			final IValidator validator = ( v ) -> {
 
 				final String value = (String) v;
 				if (value == null || value.trim().isEmpty()) {

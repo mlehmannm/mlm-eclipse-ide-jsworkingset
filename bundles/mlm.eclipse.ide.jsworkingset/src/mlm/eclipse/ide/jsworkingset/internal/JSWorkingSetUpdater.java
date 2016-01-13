@@ -137,7 +137,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 	 *
 	 */
 
-	private final IResourceChangeListener mResourceChangeListener = e -> handleResourceChanged(e);
+	private final IResourceChangeListener mResourceChangeListener = ( e ) -> handleResourceChanged(e);
 
 
 	/**
@@ -146,7 +146,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 	 *
 	 */
 
-	private final IPropertyChangeListener mPreferenceStorePropertyChangeListener = e -> handlePreferenceStorePropertyChange(e);
+	private final IPropertyChangeListener mPreferenceStorePropertyChangeListener = ( e ) -> handlePreferenceStorePropertyChange(e);
 
 
 	/**
@@ -155,7 +155,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 	 *
 	 */
 
-	private final IPropertyChangeListener mWorkingSetManagerPropertyChangeListener = e -> handleWorkingSetManagerPropertyChange(e);
+	private final IPropertyChangeListener mWorkingSetManagerPropertyChangeListener = ( e ) -> handleWorkingSetManagerPropertyChange(e);
 
 
 	/**
@@ -164,7 +164,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 	 *
 	 */
 
-	private final Consumer<WorkingSetData> mResetWorkingSetData = wsd -> resetWorkingSetData(wsd);
+	private final Consumer<WorkingSetData> mResetWorkingSetData = ( wsd ) -> resetWorkingSetData(wsd);
 
 
 	/**
@@ -173,7 +173,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 	 *
 	 */
 
-	private final Consumer<WorkingSetData> mUpdateWorkingSetData = wsd -> updateWorkingSetData(wsd);
+	private final Consumer<WorkingSetData> mUpdateWorkingSetData = ( wsd ) -> updateWorkingSetData(wsd);
 
 
 	/**
@@ -350,7 +350,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 				if (Activator.DEBUG) {
 
 					final String projects = Arrays.stream(affectedChildren) //
-					        .map(e -> e.getResource().getName()) //
+					        .map(( e ) -> e.getResource().getName()) //
 					        .sorted(Collator.getInstance()) //
 					        .collect(joining(", ")) //$NON-NLS-1$
 					        ;
