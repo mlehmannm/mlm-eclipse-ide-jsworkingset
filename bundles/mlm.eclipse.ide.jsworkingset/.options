@@ -4,6 +4,9 @@
 mlm.eclipse.ide.jsworkingset/debug=false
 
 # ???
+mlm.eclipse.ide.jsworkingset/disable=false
+
+# ???
 mlm.eclipse.ide.jsworkingset/job/delay=2000
 
 # ???

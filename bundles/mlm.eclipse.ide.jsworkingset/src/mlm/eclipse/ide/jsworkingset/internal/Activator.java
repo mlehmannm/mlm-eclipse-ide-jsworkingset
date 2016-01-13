@@ -1,5 +1,5 @@
 /****************************************************************************************
- * Copyright (c) 2015 Marco Lehmann-Mörz.
+ * Copyright (c) 2015-2016 Marco Lehmann-Mörz.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -90,6 +90,15 @@ public final class Activator extends AbstractUIPlugin implements DebugOptionsLis
 	 *
 	 */
 
+	public static boolean DISABLE = false;
+
+
+	/**
+	 *
+	 * Global debug flag.
+	 *
+	 */
+
 	public static int JOB_DELAY = -1;
 
 
@@ -144,6 +153,7 @@ public final class Activator extends AbstractUIPlugin implements DebugOptionsLis
 	public void optionsChanged( final DebugOptions pOptions ) {
 
 		DEBUG = pOptions.getBooleanOption(ID_PLUGIN + "/debug", false); //$NON-NLS-1$
+		DISABLE = pOptions.getBooleanOption(ID_PLUGIN + "/disable", false); //$NON-NLS-1$
 		JOB_DELAY = pOptions.getIntegerOption(ID_PLUGIN + "/job/delay", -1); //$NON-NLS-1$
 		JOB_PRIORITY = pOptions.getOption(ID_PLUGIN + "/job/priority", null); //$NON-NLS-1$
 
