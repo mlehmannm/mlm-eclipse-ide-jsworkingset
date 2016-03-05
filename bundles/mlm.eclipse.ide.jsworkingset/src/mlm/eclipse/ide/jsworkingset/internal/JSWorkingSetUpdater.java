@@ -1,5 +1,5 @@
 /****************************************************************************************
- * Copyright (c) 2015-2016 Marco Lehmann-Mörz.
+ * Copyright (c) 2015, 2016 Marco Lehmann-Mörz.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -437,7 +437,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 		}
 
-		deleteMarkers(pWorkingSetData.scriptFile);
+		deleteMarkers(pWorkingSetData.scriptFile, IResource.DEPTH_ZERO);
 
 		pWorkingSetData.scriptFile = null;
 		pWorkingSetData.compiledScript = null;
@@ -482,7 +482,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 			pWorkingSetData.scriptFile = scriptFile;
 
-			deleteMarkers(pWorkingSetData.scriptFile);
+			deleteMarkers(pWorkingSetData.scriptFile, IResource.DEPTH_ZERO);
 
 			try {
 
@@ -652,6 +652,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 		updateJob.setSystem(true);
 		updateJob.setUser(false);
 		updateJob.schedule(getJobDelay());
+		// TODO IProgressConstants2.SHOW_IN_TASKBAR_ICON_PROPERTY
 
 		if (Activator.DEBUG) {
 
@@ -738,6 +739,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 		updateJob.setSystem(true);
 		updateJob.setUser(false);
 		updateJob.schedule(getJobDelay());
+		// TODO IProgressConstants2.SHOW_IN_TASKBAR_ICON_PROPERTY
 
 		if (Activator.DEBUG) {
 
@@ -856,7 +858,7 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 	}
 
 
-	private void deleteMarkers( final IResource pResource ) {
+	private void deleteMarkers( final IResource pResource, final int pDepth ) {
 
 		if (pResource == null || !pResource.isAccessible()) {
 
@@ -866,8 +868,8 @@ public class JSWorkingSetUpdater implements IWorkingSetUpdater {
 
 		try {
 
-			pResource.deleteMarkers(Activator.ID_MARKER, false, IResource.DEPTH_ZERO);
-			pResource.deleteMarkers(Activator.ID_PROBLEM_MARKER, false, IResource.DEPTH_ZERO);
+			pResource.deleteMarkers(Activator.ID_MARKER, false, pDepth);
+			pResource.deleteMarkers(Activator.ID_PROBLEM_MARKER, false, pDepth);
 
 		} catch (final CoreException ex) {
 

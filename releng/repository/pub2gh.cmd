@@ -20,6 +20,7 @@ call git fetch -q origin gh-pages:gh-pages
 call git clone -q -l -s -b gh-pages ../.. "%CLONE_DIR%\gh-pages"
 popd
 cd "%CLONE_DIR%\gh-pages"
+goto end
 
 @rem cleanup old update-site
 call git rm -q -r *
