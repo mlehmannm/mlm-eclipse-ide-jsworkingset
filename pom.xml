@@ -44,16 +44,11 @@
 	</properties>
 
 	<modules>
-		<!-- target -->
-		<module>releng/target</module>
-		<!-- feature(s) -->
+		<module>targets</module>
 		<module>features</module>
-		<!-- bundle(s) -->
 		<module>bundles</module>
-		<!-- test(s) -->
 		<module>tests</module>
-		<!-- repository -->
-		<module>releng/repository</module>
+		<module>repository</module>
 	</modules>
 
 	<scm>
@@ -172,7 +167,7 @@
 					<target>
 						<artifact>
 							<groupId>${project.groupId}</groupId>
-							<artifactId>jsworkingset-target</artifactId>
+							<artifactId>jsworkingset-targets</artifactId>
 							<version>${project.version}</version>
 							<classifier>${target-platform}</classifier>
 						</artifact>
