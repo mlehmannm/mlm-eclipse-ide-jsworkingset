@@ -18,7 +18,8 @@ location eclipse-license "http://download.eclipse.org/cbi/updates/license/" {
 
 }
 
-location orbit-neon "http://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository/" {
+// TODO this is Mars.2+ update to recommended, if available
+location orbit-neon "http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository/" {
 
 	org.apache.log4j lazy
 	org.junit lazy

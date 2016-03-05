@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Eclipse-4.5.1 (Mars)" sequenceNumber="1444076882">
+<target name="Eclipse-4.5.2 (Mars)" sequenceNumber="1457181934">
   <locations>
     <location includeMode="slicer" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="true" type="InstallableUnit">
       <unit id="org.eclipse.sdk.ide" version="0.0.0"/>
@@ -11,7 +11,7 @@
       <unit id="org.eclipse.ecf.filetransfer" version="0.0.0"/>
       <unit id="org.eclipse.ecf.identity" version="0.0.0"/>
       <unit id="org.eclipse.ecf.provider.filetransfer" version="0.0.0"/>
-      <repository id="eclipse-mars-sr1" location="http://download.eclipse.org/releases/mars/201510021000"/>
+      <repository id="eclipse-mars-sr2" location="http://download.eclipse.org/releases/mars/201602261000/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="true" type="InstallableUnit">
       <unit id="org.eclipse.license.feature.group" version="0.0.0"/>
@@ -27,7 +27,7 @@
       <unit id="org.hamcrest.library" version="0.0.0"/>
       <unit id="org.mockito" version="0.0.0"/>
       <unit id="org.objenesis" version="0.0.0"/>
-      <repository id="orbit-mars-sr1" location="http://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository/"/>
+      <repository id="orbit-mars-sr2" location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository/"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="true" type="InstallableUnit">
       <unit id="org.eclipse.swtbot.eclipse.feature.group" version="0.0.0"/>
